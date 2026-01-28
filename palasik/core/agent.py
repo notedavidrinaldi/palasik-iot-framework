@@ -3,16 +3,18 @@
 from palasik.core.context import PalasikContext
 from palasik.core.engine import PalasikEngine
 from palasik.core.loader import PluginLoader
+from palasik.core.config import ConfigLoader
 
 class PalasikAgent:
     """
     Agent runtime PALASIK.
     """
 
-    def __init__(self, plugins_path="plugins"):
-        self.context = PalasikContext()
-        self.engine = PalasikEngine(self.context)
-        self.loader = PluginLoader(plugins_path)
+    def __init__(self, plugins_path="plugins", config_file=None):
+    self.config = ConfigLoader(config_file)
+    self.context = PalasikContext(self.config)
+    self.engine = PalasikEngine(self.context)
+    self.loader = PluginLoader(plugins_path)
 
     def load_plugins(self):
         plugins = self.loader.discover()
