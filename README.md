@@ -1,92 +1,122 @@
-# PALASIK  
+# 🧿 PALASIK  
 **Pengaman Layer Edge Sistem IoT Kritis**  
-*A Zero Trust IoT Gateway Framework based on Raspberry Pi*
+*A Trust-Aware Zero Trust IoT Gateway Framework*
+
+![Research](https://img.shields.io/badge/type-research-blue)
+![IoT](https://img.shields.io/badge/domain-IoT-orange)
+![Zero Trust](https://img.shields.io/badge/security-zero--trust-red)
+![Edge](https://img.shields.io/badge/edge-computing-green)
+![Python](https://img.shields.io/badge/lang-python-blue)
 
 ---
 
 ## 📌 Abstrak
-PALASIK adalah sebuah framework penelitian berbasis **Raspberry Pi**
-yang dirancang untuk menerapkan konsep **Zero Trust Security Architecture**
-pada sistem **Internet of Things (IoT)** di level **edge gateway**.
+**PALASIK** adalah framework riset keamanan **Internet of Things (IoT)**  
+berbasis **Raspberry Pi** yang menerapkan konsep  
+**Zero Trust Security Architecture di level edge gateway**.
 
-Framework ini berfokus pada evaluasi kepercayaan perangkat (device trust),
-pengendalian akses berbasis kebijakan, serta pengamanan komunikasi IoT
-yang bersifat ringan, modular, dan mudah direproduksi untuk kebutuhan
-penelitian akademik maupun pengembangan lanjutan.
+Berbeda dengan pendekatan tradisional yang hanya mengamankan cloud atau network perimeter,  
+PALASIK menempatkan **mekanisme penilaian kepercayaan (trust evaluation)**  
+langsung di gateway IoT untuk:
+
+- mendeteksi perangkat mencurigakan,
+- menilai perilaku komunikasi,
+- dan merespons ancaman secara adaptif.
+
+Framework ini dirancang **ringan, modular, dan reproducible**  
+untuk kebutuhan **penelitian akademik, eksperimen laboratorium, dan prototipe industri kecil**.
 
 ---
 
-## 🎯 Latar Belakang
-Pertumbuhan pesat sistem IoT menghadirkan tantangan keamanan yang signifikan,
-khususnya pada perangkat dengan sumber daya terbatas.
-Pendekatan keamanan tradisional yang bersifat perimeter-based
-tidak lagi memadai untuk menghadapi ancaman seperti:
+## 🎯 Latar Belakang Masalah
+Sebagian besar sistem IoT saat ini masih:
+
+- ❌ Mempercayai semua sensor di jaringan
+- ❌ Mengandalkan autentikasi statis (password / TLS saja)
+- ❌ Fokus mengirim data ke cloud tanpa validasi di edge
+
+Padahal di lapangan sering terjadi:
 - Rogue device
-- Spoofing identitas perangkat
-- Unauthorized access di edge gateway
+- Spoofing identitas sensor
+- Manipulasi data di gateway
+- Keterlambatan respon keamanan dari cloud
 
-PALASIK mengadopsi prinsip **“Never Trust, Always Verify”**
-dengan menempatkan mekanisme trust evaluation langsung di gateway IoT.
+👉 **PALASIK hadir untuk menutup celah ini di level edge.**
 
 ---
 
-## 🧠 Kontribusi Utama
-Kontribusi utama dari PALASIK meliputi:
+## 🧠 Kontribusi Ilmiah Utama
+PALASIK memberikan kontribusi riset sebagai berikut:
 
-1. **Trust Engine berbasis Edge**
-   - Evaluasi kepercayaan perangkat secara dinamis
-   - Skoring berdasarkan identitas, perilaku, dan konteks
+### 1️⃣ Trust Engine Berbasis Edge
+- Evaluasi kepercayaan perangkat secara dinamis
+- Trust score berbasis:
+  - identitas (IP, MAC),
+  - perilaku komunikasi,
+  - konteks operasional
 
-2. **Policy Engine modular**
-   - Pengambilan keputusan berbasis aturan (policy-driven)
-   - Mendukung skema allow / deny / quarantine
+### 2️⃣ Policy Engine Modular
+- Pengambilan keputusan berbasis kebijakan
+- Aksi proporsional:
+  - `ALLOW`
+  - `MONITOR`
+  - `RESTRICT`
+  - `QUARANTINE`
 
-3. **Framework eksperimental terbuka**
-   - Mudah direplikasi untuk penelitian kampus
-   - Mendukung kolaborasi lintas disiplin
+### 3️⃣ Framework Eksperimental Terbuka
+- Mudah direplikasi di lingkungan kampus
+- Mendukung eksperimen terkontrol
+- Cocok untuk skripsi, tesis, dan publikasi
 
-4. **Dokumentasi terstruktur**
-   - Arsitektur
-   - Metodologi
-   - Roadmap penelitian
+### 4️⃣ Dokumentasi Akademik Terstruktur
+- Arsitektur sistem
+- Konsep trust & policy
+- Roadmap penelitian
+- Dataset & eksperimen
 
 ---
 
 ## 🏗️ Arsitektur Sistem (Ringkas)
-
+  
 [ IoT Device ]
 │
 ▼
-[ Trust Engine ] ──► [ Policy Engine ] ──► [ IoT Service ]
+[ Trust Engine ] ──► [ Policy Engine ] ──► [ IoT Service / Backend ]
 ▲
 │
-[ Context & Behavior ]
+[ Behavior & Context Observation ]
+
+---
 
 
-PALASIK berperan sebagai **security layer** di antara perangkat IoT
-dan layanan backend.
+PALASIK berfungsi sebagai **security decision layer**  
+di antara perangkat IoT dan layanan aplikasi.
 
 ---
 
 ## 🧪 Platform & Teknologi
-- **Hardware**
-  - Raspberry Pi 3B / 3B+
-  - RFID Reader (contoh: Invengo XC-RF850)
-- **Software**
-  - Node-RED
-  - Python
-  - MQTT / REST API
-- **Security Concept**
-  - Zero Trust Architecture
-  - Edge Computing
-  - Policy-based Access Control
+
+### Hardware
+- Raspberry Pi 3B / 3B+
+- IoT Device / RFID Reader (contoh: Invengo XC-RF850)
+
+### Software
+- Python
+- Node-RED (opsional sebagai control plane)
+- MQTT / REST API
+
+### Konsep Keamanan
+- Zero Trust Architecture (ZTA)
+- Edge Computing
+- Policy-based Access Control
+- Trust-aware System
 
 ---
 
 ## 📚 Dokumentasi Lengkap
-Dokumentasi teknis dan pengembangan tersedia di:
+Dokumentasi pengembangan tersedia di:
 
-👉 https://notedavidrinaldi.github.io/palasik/
+👉 **https://notedavidrinaldi.github.io/palasik/**
 
 Struktur dokumentasi:
 - Overview
@@ -100,47 +130,86 @@ Struktur dokumentasi:
 
 ---
 
-## 🧑‍🔬 Konteks Penelitian
-Framework ini ditujukan untuk:
-- Penelitian IoT Security
-- Edge Computing
-- Smart Infrastructure
-- Sistem Tertanam & Jaringan
+## 🧑‍🔬 Konteks Penelitian & Use Case
+PALASIK ditujukan untuk riset di bidang:
 
-PALASIK **tidak terbatas pada satu use-case** dan dapat dikembangkan
-untuk:
+- IoT Security
+- Edge Computing
+- Embedded Systems
+- Industrial IoT (IIoT)
+
+Potensi implementasi:
 - Smart Campus
-- Smart Port
+- Smart Port & Logistics
 - Smart Healthcare
-- Industrial IoT
+- Smart Agriculture
+- Industrial Monitoring
 
 ---
 
-## 🤝 Kontribusi & Kolaborasi
-Kontribusi sangat terbuka untuk:
-- Peneliti
-- Mahasiswa
-- Praktisi IoT & Security
+## 🤝 Kontribusi & Kolaborasi (SANGAT DIHARAPKAN)
+PALASIK adalah **open research framework**.
 
-Silakan baca panduan kontribusi di:
-📄 `CONTRIBUTING.md`
+Kami mengundang kontribusi dari:
+- 🎓 Mahasiswa (skripsi / tesis)
+- 🧪 Peneliti
+- 🧠 Praktisi IoT & Security
+
+Contoh kontribusi yang dibutuhkan:
+- Trust scoring model
+- Policy rule design
+- Dataset eksperimen
+- Dokumentasi & studi kasus
+- Evaluasi performa
+
+📄 Panduan kontribusi:
+👉 `CONTRIBUTING.md`
+
+---
+
+## ⚖️ Etika & Ruang Lingkup
+PALASIK dirancang untuk:
+- jaringan milik sendiri,
+- laboratorium riset,
+- lingkungan industri tertutup.
+
+❌ **Tidak ditujukan untuk offensive security atau scanning ilegal.**
 
 ---
 
 ## 📄 Sitasi
 Jika menggunakan PALASIK dalam publikasi ilmiah, silakan rujuk:
-📑 `docs/palasik/citation.md`
+
+📑 `citation.md`
 
 ---
 
 ## 📜 Lisensi
-Proyek ini dirilis di bawah **MIT License**,
-memungkinkan penggunaan untuk riset dan pengembangan lanjutan.
+Dirilis di bawah **MIT License**  
+Bebas digunakan untuk riset dan pengembangan lanjutan.
 
 ---
 
-## 👤 Peneliti Utama
+## 👤 Maintainer & Peneliti Utama
 **David Rinaldi**  
 IoT Security & Edge Computing Researcher  
-📧 GitHub: https://github.com/notedavidrinaldi/palasik-iot-framework
+🔗 GitHub: https://github.com/notedavidrinaldi/palasik-iot-framework
+
+---
+
+## 🚀 Selanjutnya?
+- 🔍 Lihat **Issues** untuk ide kontribusi
+- ⭐ Star repo ini jika tertarik
+- 🤝 Fork & eksperimen
+
+---
+
+### 🧠 Catatan
+README ini disusun agar:
+- layak dijadikan referensi akademik,
+- mudah dipahami kontributor baru,
+- dan siap mendukung publikasi ilmiah.
+
+PALASIK bukan sekadar project,  
+tetapi **platform riset terbuka** untuk keamanan IoT berbasis edge.
 

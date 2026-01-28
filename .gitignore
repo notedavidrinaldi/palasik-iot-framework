@@ -1,16 +1,46 @@
+# =====================
 # Python
+# =====================
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+
+# Virtual Environments
+.venv/
 venv/
+ENV/
+env/
 
-# Logs & data
-data/logs/*.csv
-data/logs/*.log
+# =====================
+# Logs & Runtime
+# =====================
+*.log
+data/logs/
+*.pid
 
-# Experiments output
-experiments/output/
-*.png
-
+# =====================
 # OS
+# =====================
 .DS_Store
+Thumbs.db
 
+# =====================
+# IDE / Editor
+# =====================
+.vscode/
+.idea/
+*.swp
+
+# =====================
+# Testing / Cache
+# =====================
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# =====================
+# Secrets / Config
+# =====================
+.env
+*.secret
