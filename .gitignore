@@ -44,3 +44,9 @@ htmlcov/
 # =====================
 .env
 *.secret
+
+
+
+dist/
+build/
+*.egg-info/

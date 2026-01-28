@@ -7,7 +7,7 @@ from palasik.core.decision import Decision
 class PalasikEngine:
     """
     Engine utama PALASIK.
-    Mengelola lifecycle dan event dispatch.
+    Enforcement point Zero Trust.
     """
 
     def __init__(self, context):
@@ -25,27 +25,28 @@ class PalasikEngine:
 
     def emit(self, event: dict):
         """
-        Enforcement point utama PALASIK.
-        Hanya event dengan keputusan ALLOW yang diteruskan.
+        Enforcement point utama.
+        Hanya event ALLOW yang diteruskan.
         """
 
         trust_score = self.context.trust.evaluate(event, self.context)
         decision = self.context.policy.decide(trust_score, event, self.context)
 
-        # 🔐 ENFORCEMENT POINT
+        # 🔐 ENFORCEMENT
         if decision != Decision.ALLOW.value:
             self.context.logger.info(
                 f"Event blocked by policy | trust={trust_score} | event={event}"
             )
-            return  # STOP total, event tidak diteruskan
+            return
 
-        # ✅ HANYA EVENT ALLOW YANG SAMPAI KE PLUGIN
+        # ✅ EVENT ALLOW → plugin
         for plugin in self.registry.all():
             plugin.on_event(event, self.context)
-           # Setelah plugin.on_event(...)
-            http_adapter = getattr(self.context, "http_adapter", None)
-             if http_adapter:
-              http_adapter.forward(event)
+
+        # ✅ EVENT ALLOW → HTTP (opsional)
+        http_adapter = getattr(self.context, "http_adapter", None)
+        if http_adapter:
+            http_adapter.forward(event)
 
     def stop(self):
         for plugin in self.registry.all():

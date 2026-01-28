@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "palasik"
+version = "0.1.0"
+description = "PALASIK IoT Zero Trust Event Enforcement Framework"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "David Rinaldi" }
+]
+
+dependencies = [
+  "pyyaml>=6.0",
+  "requests>=2.31"
+]
+
+[project.urls]
+Homepage = "https://github.com/notedavidrinaldi/palasik-iot-framework"
+Repository = "https://github.com/notedavidrinaldi/palasik-iot-framework"
+
+[project.scripts]
+palasik = "palasik.cli.main:main"
+
+[tool.setuptools]
+packages = { find = { include = ["palasik*"] } }

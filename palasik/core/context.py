@@ -1,30 +1,29 @@
-# palasik/core/context.py
+from palasik.policy.allow_deny import AllowDenyPolicy
+from palasik.trust.simple import SimpleTrustEvaluator
+from palasik.core.logger import Logger
+
 
 class PalasikContext:
     """
-    Shared runtime context untuk seluruh komponen PALASIK.
-    Digunakan untuk menyimpan konfigurasi, state, dan resource runtime.
+    Context global PALASIK.
+    Menyimpan state bersama: config, trust, policy, logger, adapter.
     """
 
-    def __init__(self):
-        self.config = {}
-        self.state = {}
-        self.resources = {}
+    def __init__(self, config=None):
+        self.config = config
 
-    def set_config(self, key, value):
-        self.config[key] = value
+        # Logger default
+        self.logger = Logger()
 
-    def get_config(self, key, default=None):
-        return self.config.get(key, default)
+        # ✅ Trust engine default (IMPLEMENTASI NYATA)
+        self.trust = SimpleTrustEvaluator()
 
-    def set_state(self, key, value):
-        self.state[key] = value
+        # Policy engine default (configurable)
+        threshold = 0.5
+        if config:
+            threshold = config.get("palasik", "policy", "threshold", default=0.5)
 
-    def get_state(self, key, default=None):
-        return self.state.get(key, default)
+        self.policy = AllowDenyPolicy(threshold=threshold)
 
-    def register_resource(self, name, resource):
-        self.resources[name] = resource
-
-    def get_resource(self, name):
-        return self.resources.get(name)
+        # Adapter opsional
+        self.http_adapter = None
