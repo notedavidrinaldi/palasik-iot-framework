@@ -29,3 +29,11 @@ class PalasikAgent:
 
     def stop(self):
         self.engine.stop()
+
+http_cfg = self.config.get("palasik", "http", default={})
+if http_cfg.get("enabled"):
+    from palasik.adapters.http.adapter import HTTPAdapter
+    self.context.http_adapter = HTTPAdapter(
+        endpoint=http_cfg.get("endpoint"),
+        timeout=http_cfg.get("timeout", 5),
+    )
