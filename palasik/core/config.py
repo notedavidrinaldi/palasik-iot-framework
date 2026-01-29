@@ -2,28 +2,53 @@
 
 import os
 import yaml
-    
+
 
 class ConfigLoader:
     def __init__(self, config_file: str | None = None):
-        self.config = {}
+        self.config: dict = {}
 
         if config_file:
-            self.load_yaml(config_file)
+            self.load_file(config_file)
 
+        self.normalize()   # ⬅️ INI KUNCI
         self.load_env()
 
-    def load_yaml(self, path: str):
+    def load_file(self, path: str):
         if not os.path.exists(path):
             raise FileNotFoundError(f"Config file not found: {path}")
 
         with open(path, "r") as f:
             data = yaml.safe_load(f) or {}
-            self.config.update(data)
+
+        if not isinstance(data, dict):
+            raise ValueError("Config file must be a YAML dictionary")
+
+        self.config.update(data)
+
+    def normalize(self):
+        """
+        Pastikan semua node penting adalah dict,
+        bukan None (hasil YAML kosong).
+        """
+        if self.config.get("palasik") is None:
+            self.config["palasik"] = {}
+
+        palasik = self.config["palasik"]
+
+        if palasik.get("broker") is None:
+            palasik["broker"] = {}
+
+        if palasik.get("policy") is None:
+            palasik["policy"] = {}
+
+        if palasik.get("plugins") is None:
+            palasik["plugins"] = {}
 
     def load_env(self):
-        broker = self.config.setdefault("palasik", {}).setdefault("broker", {})
-        policy = self.config.setdefault("palasik", {}).setdefault("policy", {})
+        palasik = self.config["palasik"]
+        broker = palasik["broker"]
+        policy = palasik["policy"]
 
         broker["host"] = os.getenv("PALASIK_BROKER_HOST", broker.get("host"))
         broker["port"] = int(os.getenv("PALASIK_BROKER_PORT", broker.get("port", 1883)))
@@ -33,7 +58,9 @@ class ConfigLoader:
         )
 
     def get(self, *keys, default=None):
-        data = self.config
-        for key in keys:
-            data = data.get(key, {})
-        return data or default
+        ref = self.config
+        for k in keys:
+            if not isinstance(ref, dict):
+                return default
+            ref = ref.get(k)
+        return ref if ref is not None else default
