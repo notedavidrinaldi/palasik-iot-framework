@@ -1,0 +1,15 @@
+palasik:
+broker:
+host: localhost
+port: 1883
+topic: palasik/sensor/#
+
+
+policy:
+type: allow_deny
+threshold: 0.7
+
+
+plugins:
+enabled:
+- logger

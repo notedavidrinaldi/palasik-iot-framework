@@ -16,3 +16,13 @@
 ### Notes
 - This release establishes PALASIK as a production-ready framework,
   not an experimental prototype.
+
+
+## v0.1.1
+### Fixed
+- Fix YAML config with null values causing runtime crash
+- Ensure config normalization before ENV override
+- Fix MQTT example to use absolute config path
+
+### Improved
+- CLI reliability for real-world usage
