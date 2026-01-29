@@ -1,4 +1,4 @@
-import palasik
-palasik.__version__
+# palasik/__init__.py
+from .version import __version__
 
-__version__ = "0.1.2"
+__all__ = ["__version__"]
