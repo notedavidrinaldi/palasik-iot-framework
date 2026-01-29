@@ -1,59 +1,107 @@
 # PALASIK Architecture
 
-Dokumen ini menjelaskan arsitektur PALASIK sebagai framework IoT Gateway
-berbasis Zero Trust.
+Dokumen ini menjelaskan arsitektur internal PALASIK
+sebagai **Zero Trust Event Enforcement Framework**.
 
 ---
 
-## Komponen Utama
+## 🧱 High-Level Architecture
 
-1. **Agent**
-   Runtime utama yang mengatur lifecycle sistem.
+PALASIK berada di **edge / gateway layer**
+di antara perangkat IoT dan backend service.
 
-2. **Adapter**
-   Jembatan antara dunia luar (MQTT, HTTP) dan event internal PALASIK.
+```text
+IoT Device
+   │
+   ▼
+[ Adapter ]
+   │
+   ▼
+[ Agent ]
+   │
+   ├── Trust Engine
+   │
+   ├── Policy Engine
+   │
+   └── Plugin System
+   │
+   ▼
+Backend / Service
 
-3. **Trust Engine**
-   Menghitung skor kepercayaan event.
-
-4. **Policy Engine**
-   Menentukan keputusan keamanan (ALLOW / DENY).
-
-5. **Plugin**
-   Menangani event berdasarkan keputusan policy.
-
----
-
-## Alur Event
-
-```mermaid
-sequenceDiagram
-    participant Device
-    participant Broker
-    participant Adapter
-    participant Agent
-    participant Trust
-    participant Policy
-    participant Plugin
-
-    Device->>Broker: publish data
-    Broker->>Adapter: message
-    Adapter->>Agent: emit_event
-    Agent->>Trust: evaluate
-    Trust->>Agent: trust_score
-    Agent->>Policy: decide
-    Policy->>Agent: ALLOW / DENY
-    Agent->>Plugin: on_event
 ```
-Prinsip Desain
+---
+## 🧱 High-Level Architecture
 
--Zero Trust by Default
+PALASIK berada di **edge / gateway layer**
+di antara perangkat IoT dan backend service.
 
--Separation of Concern
+```text
+IoT Device
+   │
+   ▼
+[ Adapter ]
+   │
+   ▼
+[ Agent ]
+   │
+   ├── Trust Engine
+   │
+   ├── Policy Engine
+   │
+   └── Plugin System
+   │
+   ▼
+Backend / Service
+```
 
--Extensible via Plugin
+## 🔁 Event Processing Flow
+```text
+Event
+ └─► Adapter
+     └─► Agent
+         ├─► TrustEngine.evaluate()
+         ├─► PolicyEngine.decide()
+         └─► Plugin.on_event()
+```
+## 🧩 Core Components
 
--Single Direction Data Flow
+Agent
 
+- Runtime utama PALASIK
 
+- Mengelola lifecycle sistem
 
+- Mengorkestrasi trust, policy, dan plugin
+
+Adapter
+
+- Menjembatani dunia luar (MQTT, HTTP, dll)
+
+- Mengubah input menjadi event PALASIK
+
+Trust Engine
+
+- Menghitung skor kepercayaan (0.0 – 1.0)
+
+- Tidak membuat keputusan akhir
+
+Policy Engine
+
+- Mengubah trust score menjadi keputusan eksplisit
+
+- Contoh: ALLOW, DENY
+
+Plugin System
+
+- Menjalankan aksi berdasarkan keputusan
+- Logging, forwarding, alert, dsb
+
+## 🔐 Design Principles
+
+- Zero Trust by Default
+
+- Explicit Decision Making
+
+- Single Direction Flow
+
+- Separation of Concern
