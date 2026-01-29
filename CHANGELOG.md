@@ -31,3 +31,8 @@
 ### Fixed
 - Fix circular import when accessing palasik.__version__
 - Properly expose package version at top-level namespace
+
+## v0.1.3
+### Fixed
+- Fix circular import when accessing palasik.__version__
+- Stabilize version export for PyPI installation
