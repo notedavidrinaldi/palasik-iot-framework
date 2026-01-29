@@ -1,1 +1,4 @@
+import palasik
+palasik.__version__
+
 __version__ = "0.1.1"
