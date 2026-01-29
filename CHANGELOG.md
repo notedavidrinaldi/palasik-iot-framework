@@ -26,3 +26,8 @@
 
 ### Improved
 - CLI reliability for real-world usage
+
+## v0.1.2
+### Fixed
+- Fix circular import when accessing palasik.__version__
+- Properly expose package version at top-level namespace
