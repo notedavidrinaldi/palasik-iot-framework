@@ -302,7 +302,6 @@ Bebas digunakan untuk riset dan pengembangan lanjutan.
 ## 👤 Maintainer
 
 David Rinaldi
-IoT Security & Edge Computing
 🔗 https://github.com/notedavidrinaldi
 
 ---
