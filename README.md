@@ -3,8 +3,39 @@
 
 [![PyPI](https://img.shields.io/pypi/v/palasik.svg)](https://pypi.org/project/palasik/)
 [![Python](https://img.shields.io/pypi/pyversions/palasik.svg)](https://pypi.org/project/palasik/)
+[![CI-Staging](https://github.com/notedavidrinaldi/palasik-iot-framework/actions/workflows/ci-staging.yml/badge.svg)](https://github.com/notedavidrinaldi/palasik-iot-framework/actions/workflows/ci-staging.yml)
 [![License](https://img.shields.io/github/license/notedavidrinaldi/palasik-iot-framework)](LICENSE)
 [![Status](https://img.shields.io/badge/status-stable-green)]()
+
+**Migration note:** badge `CI-Staging` menunjukkan jalur migrasi ketat. Pipeline akan fail jika terdapat legacy deprecation warning untuk `palasik.core.trust_engine` atau `palasik.core.policy_engine`.
+
+**Quick-check untuk menghapus `ci-staging.yml`:** hilangkan workflow ini bila semua kondisi berikut terpenuhi:
+
+1. Legacy import scan = `0 issues`.
+2. `make migration-check` berjalan clean (termasuk strict deprecation test).
+
+Quick-check otomatis tersedia via:
+
+```bash
+python3 scripts/check_legacy_imports.py
+make migration-check
+```
+
+Untuk menjadikan ini gate yang benar-benar mandatory pada branch `staging`, aktifkan check `migration-gate` sebagai required status check di branch protection.
+Untuk verifikasi cepat apakah sudah wajib, gunakan script audit:
+
+```bash
+bash scripts/check_staging_gate.sh --branch=staging
+```
+
+Untuk meng-enable dan melihat payload update branch protection (dan bisa dicoba dulu tanpa auth via `--dry-run`):
+
+```bash
+bash scripts/apply_staging_branch_protection.sh --dry-run
+bash scripts/apply_staging_branch_protection.sh --branch=staging
+```
+
+Dokumen lengkap: [docs/MIGRATION_GATE.md](docs/MIGRATION_GATE.md)
 
 ---
 
@@ -181,6 +212,20 @@ Event → Trust Engine → Policy Engine → Enforcement
 ```
 
 PALASIK adalah decision layer, bukan sekadar message router.
+
+## ✅ Jalur Aktif (Migration Note)
+
+Untuk konsistensi implementasi saat ini, gunakan jalur aktif berikut:
+
+- Trust: `palasik.trust` (`SimpleTrustEvaluator` atau custom evaluator)
+- Policy: `palasik.policy` (`AllowDenyPolicy`, `RuleBasedPolicy`, atau custom policy)
+
+Import dari `palasik.core.trust_engine` dan `palasik.core.policy_engine` tetap didukung
+untuk kompatibilitas, dan akan diperlakukan sebagai deprecation path pada fase migrasi
+berikutnya.
+
+Untuk enforce perilaku fase berikutnya secara lokal, bisa diaktifkan lewat:
+`PALASIK_STRICT_DEPRECATION=1`.
 ---
 ## 🗂 Project Structure
 ```plaintext
@@ -235,7 +280,9 @@ Detail lengkap:
 ## 🧪 Testing
 
 ```bash
-pytest
+python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
+python -m pytest -q
 ```
 
 Semua komponen inti memiliki unit test.
@@ -308,7 +355,7 @@ David Rinaldi
 
 ## 🚦 Project Status
 
-✅ Core stable (v0.1.0)
+✅ Core stable (v0.2.0)
 
 📦 Published on PyPI
 

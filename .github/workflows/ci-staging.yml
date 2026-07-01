@@ -1,0 +1,56 @@
+name: PALASIK CI (Staging)
+
+on:
+  push:
+    branches: ["staging"]
+  pull_request:
+    branches: ["staging"]
+
+jobs:
+  test:
+    name: migration-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -V
+          python -m pip --version
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest
+
+      - name: Legacy import scan + strict migration tests
+        run: |
+          make migration-check
+
+  migration-gate:
+    name: migration-gate
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+
+    steps:
+      - name: Validate staging migration gate
+        run: |
+          if [ "${{ needs.test.result }}" != "success" ]; then
+            echo "::error::Staging migration-gate failed: matrix test job result is ${{ needs.test.result }}"
+            exit 1
+          fi
+
+          echo "[migration-check] gate: PASS"
+          echo "Staging migration-gate complete."

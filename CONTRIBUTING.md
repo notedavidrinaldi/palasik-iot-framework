@@ -48,6 +48,35 @@ Kontribusi diharapkan mendukung:
    ```bash
    git commit -m "Add trust scoring experiment"
   ```
+
+## ✅ Migration Gate (untuk PR ke `staging`)
+
+Sebelum membuka PR ke branch `staging`, pastikan command ini lulus:
+
+```bash
+make migration-check
+```
+
+`make migration-check` menjalankan:
+
+- `python3 scripts/check_legacy_imports.py` (harus tampil `0 issues`)
+- `make test-strict` (`PALASIK_STRICT_DEPRECATION=1`, deprecation menjadi error)
+
+PR ke `staging` sebaiknya tidak diteruskan bila:
+- ada legacy import ke `palasik.core.trust_engine` / `palasik.core.policy_engine`
+- atau strict test gagal karena warning deprecation
+
+Untuk memastikan aturan branch protection juga aktif:
+
+```bash
+bash scripts/check_staging_gate.sh --branch=staging
+```
+
+Referensi: [docs/MIGRATION_GATE.md](docs/MIGRATION_GATE.md)
+
+Saat membuat PR, isi template PR (termasuk checklist migration check) agar review bisa
+langsung mengecek kesiapan migrasi.
+
 ---
 
 ## 🧪 Standar Penelitian
@@ -111,10 +140,6 @@ Apakah relevan untuk:
 
 ## 🔬 Referensi (Opsional)
 Paper / standar / studi terkait.
-
-
-
-
 
 
 

@@ -2,9 +2,9 @@ name: PALASIK CI
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
 
 jobs:
   test:
@@ -35,4 +35,4 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest -v
+          python -m pytest -v

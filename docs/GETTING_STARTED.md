@@ -157,11 +157,21 @@ Terima kasih tertarik berkontribusi.
 
 ## Setup Dev
 ```bash
-pip install -e .
-pip install pytest
-pytest
+python -m pip install -e .
+python -m pip install -r requirements-dev.txt
+python -m pytest
 ```
 PR tanpa test kemungkinan besar ditolak.
+
+### 2️⃣ Jalur implementasi yang diprioritaskan
+
+Selama fase sekarang, gunakan jalur API utama berikut:
+
+- Trust: `palasik.trust`
+- Policy: `palasik.policy`
+
+`palasik.core.trust_engine` dan `palasik.core.policy_engine` hanya untuk kompatibilitas lama
+dan akan dianggap legacy pada migrasi berikutnya.
 
 
 ---
@@ -172,4 +182,3 @@ git add docs examples README.md CONTRIBUTING.md
 git commit -m "docs: add getting started, examples, and contribution guide"
 git push
 ```
-
