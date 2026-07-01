@@ -1,6 +1,7 @@
 # palasik/cli/main.py
 
 import argparse
+import threading
 import sys
 from pathlib import Path
 
@@ -21,10 +22,14 @@ def cmd_run(args):
 
     try:
         print("[PALASIK] Agent running. Press Ctrl+C to stop.")
-        while True:
-            pass
+        stop_event = threading.Event()
+        while not stop_event.is_set():
+            stop_event.wait(1.0)
+    except Exception as e:
+        print(f"\n[PALASIK] Unexpected error: {e}")
     except KeyboardInterrupt:
         print("\n[PALASIK] Stopping agent...")
+    finally:
         agent.stop()
 
 
@@ -42,6 +47,10 @@ def cmd_init(args):
 
   policy:
     threshold: 0.7
+
+  plugins:
+    enabled:
+      - logger
 
   http:
     enabled: false

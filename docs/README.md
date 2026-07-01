@@ -1,7 +1,4 @@
-# PALASIK Documentation
+# DEMIT Documentation
 
-Folder ini berisi dokumentasi teknis PALASIK sebagai framework.
-
-- ARCHITECTURE.md → arsitektur sistem
-- CONFIG.md → konfigurasi
-- raw/ → dokumentasi riset & bahan jurnal
+- [DEMIT Super App](DEMIT.md)
+- [PALASIK Core](../README.md)

@@ -31,7 +31,7 @@ class MQTTAdapter:
 
     def on_message(self, client, userdata, msg):
         try:
-            payload = msg.payload.decode()
+            payload = msg.payload.decode("utf-8")
             data = json.loads(payload)
 
             event = {
@@ -41,7 +41,10 @@ class MQTTAdapter:
                 "raw": data
             }
 
-            self.agent.emit_event(event)
+            if hasattr(self.agent, "emit_event"):
+                self.agent.emit_event(event)
+            else:
+                self.agent.emit(event)
 
         except Exception as e:
             print("[MQTT] Error processing message:", e)

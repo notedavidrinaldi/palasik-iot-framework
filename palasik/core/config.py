@@ -43,7 +43,7 @@ class ConfigLoader:
             palasik["policy"] = {}
 
         if palasik.get("plugins") is None:
-            palasik["plugins"] = {}
+            palasik["plugins"] = {"enabled": []}
 
     def load_env(self):
         palasik = self.config["palasik"]
@@ -51,11 +51,20 @@ class ConfigLoader:
         policy = palasik["policy"]
 
         broker["host"] = os.getenv("PALASIK_BROKER_HOST", broker.get("host"))
-        broker["port"] = int(os.getenv("PALASIK_BROKER_PORT", broker.get("port", 1883)))
-
-        policy["threshold"] = float(
-            os.getenv("PALASIK_POLICY_THRESHOLD", policy.get("threshold", 0.5))
+        broker["port"] = _safe_convert_int(
+            os.getenv("PALASIK_BROKER_PORT", broker.get("port", 1883)),
+            default=1883,
         )
+
+        policy["threshold"] = _safe_convert_float(
+            os.getenv("PALASIK_POLICY_THRESHOLD", policy.get("threshold", 0.5)),
+            default=0.5,
+        )
+
+        policy["type"] = os.getenv("PALASIK_POLICY_TYPE", policy.get("type", "allow_deny"))
+
+        if os.getenv("PALASIK_DECISION_LOG"):
+            palasik["decision_log"] = os.getenv("PALASIK_DECISION_LOG")
 
     def get(self, *keys, default=None):
         ref = self.config
@@ -64,3 +73,17 @@ class ConfigLoader:
                 return default
             ref = ref.get(k)
         return ref if ref is not None else default
+
+
+def _safe_convert_int(value, default):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _safe_convert_float(value, default):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default

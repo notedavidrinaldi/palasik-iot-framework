@@ -1,0 +1,11 @@
+demit:
+  apps:
+    - palasik
+
+apps:
+  palasik:
+    type: palasik
+    config_file: "config.yaml"
+    plugins_path: "plugins"
+    routes:
+      - palasik

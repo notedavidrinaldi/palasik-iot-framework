@@ -1,5 +1,5 @@
-# 🧿 PALASIK  
-**Policy-Aware Zero Trust Event Enforcement Framework for IoT & Edge**
+# DEMIT + PALASIK
+**DEMIT Super App for Digital Monitoring, with PALASIK as the Zero Trust IoT security application**
 
 [![PyPI](https://img.shields.io/pypi/v/palasik.svg)](https://pypi.org/project/palasik/)
 [![Python](https://img.shields.io/pypi/pyversions/palasik.svg)](https://pypi.org/project/palasik/)
@@ -8,18 +8,47 @@
 
 ---
 
+## 🔷 What is DEMIT?
+
+**DEMIT** adalah kerangka **super app** yang dirancang untuk menampung beberapa aplikasi digital
+dalam satu runtime terpadu.
+
+Di dalam roadmap DEMIT:
+
+- **PALASIK** menjadi **App 1**
+- fokus PALASIK adalah **keamanan IoT berbasis Zero Trust**
+- aplikasi lain nantinya bisa ditambahkan tanpa merusak core PALASIK
+
+Struktur pikirnya:
+
+1. DEMIT = ekosistem / super-app runtime
+2. PALASIK = aplikasi keamanan IoT di dalam DEMIT
+3. aplikasi lain = modul lanjutan yang berbagi orchestration yang sama
+
+Detail runtime DEMIT:
+[`docs/DEMIT.md`](docs/DEMIT.md)
+
+---
+
 ## 🔐 What is PALASIK?
 
 **PALASIK** (Policy-Aware Lightweight Adaptive Security for IoT) adalah **framework Python berbasis Zero Trust**
 yang berfungsi sebagai **security enforcement layer** di **edge / gateway IoT**.
 
-PALASIK **tidak pernah menganggap event atau device itu tepercaya secara default**.  
+PALASIK **tidak pernah menganggap event atau device itu tepercaya secara default**.
 Setiap event **HARUS**:
 1. Dievaluasi tingkat kepercayaannya (**Trust Engine**)
 2. Diputuskan secara eksplisit (**Policy Engine**)
 3. Baru diteruskan atau diblok (**Enforcement Point**)
 
-Framework ini dirancang **ringan, modular, dan extensible**.
+Ide utamanya adalah:
+
+- perangkat IoT tidak boleh langsung dipercaya
+- event tidak boleh langsung lewat
+- sistem harus belajar pola, mengevaluasi trust, dan memastikan tidak ada upaya
+  pengambilan data paksa atau penyalahgunaan jalur komunikasi IoT
+
+Framework ini dirancang **ringan, modular, extensible, dan research-ready**.
 
 ---
 
@@ -61,6 +90,12 @@ PALASIK cocok digunakan untuk:
 pip install palasik
 ```
 Python >= 3.10 direkomendasikan.
+
+Untuk runtime DEMIT, package yang sama juga menyediakan command:
+
+```bash
+demit --config demit.yaml
+```
 
 ---
 
@@ -108,6 +143,34 @@ Alur yang terjadi:
 4. ALLOW → diteruskan
 
 5. DENY → diblok
+
+---
+
+## 🚀 Run As DEMIT Super App
+
+Contoh `demit.yaml` bawaan:
+
+```yaml
+demit:
+  apps:
+    - palasik
+
+apps:
+  palasik:
+    type: palasik
+    config_file: "config.yaml"
+    plugins_path: "plugins"
+    routes:
+      - palasik
+```
+
+Jalankan:
+
+```bash
+demit --config demit.yaml
+```
+
+Dengan ini, PALASIK berjalan sebagai aplikasi pertama di dalam runtime DEMIT.
 ---
 ## 🧠 How It Works (High Level)
 ```planttext
@@ -121,6 +184,11 @@ PALASIK adalah decision layer, bukan sekadar message router.
 ---
 ## 🗂 Project Structure
 ```plaintext
+demit/
+├── core/        # Super-app runtime, app contract, router
+├── apps/        # App modules inside DEMIT
+└── cli/         # demit CLI
+
 palasik/
 ├── core/        # Agent, engine, context
 ├── trust/       # Trust evaluators
@@ -177,6 +245,7 @@ Semua komponen inti memiliki unit test.
 | Topik         | File                        |
 | ------------- | --------------------------- |
 | Architecture  | `docs/ARCHITECTURE.md`      |
+| DEMIT         | `docs/DEMIT.md`             |
 | Configuration | `docs/CONFIG.md`            |
 | Trust Engine  | `docs/raw/trust-engine.md`  |
 | Policy Engine | `docs/raw/policy-engine.md` |
@@ -233,7 +302,6 @@ Bebas digunakan untuk riset dan pengembangan lanjutan.
 ## 👤 Maintainer
 
 David Rinaldi
-IoT Security & Edge Computing
 🔗 https://github.com/notedavidrinaldi
 
 ---

@@ -3,3 +3,6 @@ palasik:
     enabled: true
     endpoint: "https://example.com/webhook"
     timeout: 5
+  plugins:
+    enabled:
+      - logger

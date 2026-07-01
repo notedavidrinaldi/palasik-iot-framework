@@ -1,32 +1,30 @@
 # plugins/logger/plugin.py
 
 from palasik.core.plugin import PalasikPlugin
-from palasik.trust.simple import SimpleTrustEvaluator
-from palasik.policy.allow_deny import AllowDenyPolicy
+
 
 class LoggerPlugin(PalasikPlugin):
-
-    def __init__(self):
-        self.trust = SimpleTrustEvaluator()
-        self.policy = AllowDenyPolicy(threshold=0.7)
 
     def name(self):
         return "logger"
 
     def version(self):
-        return "1.1.0"
+        return "1.2.0"
 
     def on_start(self, context):
         print("[Logger] PALASIK Agent started")
 
     def on_event(self, event, context):
-        trust_score = self.trust.evaluate(event, context)
-        decision = self.policy.decide(trust_score, event, context)
+        decision = getattr(context, "latest_decision", None)
+        if decision is None:
+            print(f"[Logger] Event={event}")
+            return
 
         print(
             f"[Logger] Event={event} | "
-            f"Trust={trust_score} | "
-            f"Decision={decision}"
+            f"Decision={decision.decision.value} | "
+            f"Policy={decision.policy_name} | "
+            f"Trust={decision.trust_score}"
         )
 
     def on_stop(self, context):
