@@ -2,7 +2,6 @@
 
 import importlib
 import inspect
-import pkgutil
 from pathlib import Path
 
 from palasik.core.plugin import PalasikPlugin
@@ -22,14 +21,24 @@ class PluginLoader:
         only_names = {name for name in (only_names or []) if name}
         enabled = None if not only_names else set(only_names)
 
-        if not Path(self.plugins_path).exists():
+        plugin_package = Path(self.plugins_path).name
+        plugins_root = Path(self.plugins_path)
+
+        if not plugins_root.exists():
             return plugins
 
-        for _, name, _ in pkgutil.iter_modules([self.plugins_path]):
+        plugin_dirs = [
+            p
+            for p in plugins_root.iterdir()
+            if p.is_dir() and (p / "plugin.py").is_file()
+        ]
+
+        for plugin_dir in sorted(plugin_dirs):
+            name = plugin_dir.name
             if enabled is not None and name not in enabled:
                 continue
 
-            module_path = f"{self.plugins_path}.{name}.plugin"
+            module_path = f"{plugin_package}.{name}.plugin"
             try:
                 module = importlib.import_module(module_path)
 

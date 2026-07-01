@@ -22,6 +22,14 @@ class PalasikEngine:
     def register_plugin(self, plugin):
         self.registry.register(plugin)
 
+    def _plugin_name(self, plugin):
+        """Resolve a safe plugin name for logs and registry key lookup."""
+        name = getattr(plugin, "name", None)
+        if callable(name):
+            return name()
+
+        return plugin.__class__.__name__
+
     def start(self):
         self.running = True
         for plugin in self.registry.all():
@@ -29,7 +37,7 @@ class PalasikEngine:
                 plugin.on_start(self.context)
             except Exception as e:
                 self.context.logger.error(
-                    f"Plugin '{plugin.name()}' failed on_start: {e}"
+                    f"Plugin '{self._plugin_name(plugin)}' failed on_start: {e}"
                 )
                 continue
 
@@ -111,7 +119,7 @@ class PalasikEngine:
                 plugin.on_event(event, self.context)
             except Exception as e:
                 self.context.logger.error(
-                    f"Plugin '{plugin.name()}' failed on event: {e} | event={event}"
+                    f"Plugin '{self._plugin_name(plugin)}' failed on event: {e} | event={event}"
                 )
 
         # ✅ EVENT LULUS → HTTP (opsional)
@@ -133,7 +141,7 @@ class PalasikEngine:
                 plugin.on_stop(self.context)
             except Exception as e:
                 self.context.logger.error(
-                    f"Plugin '{plugin.name()}' failed on_stop: {e}"
+                    f"Plugin '{self._plugin_name(plugin)}' failed on_stop: {e}"
                 )
         self.running = False
 
