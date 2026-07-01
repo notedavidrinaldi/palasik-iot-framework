@@ -15,7 +15,14 @@ class PolicyEngine(ABC):
     def decide(self, trust_score: float, event: dict, context) -> str:
         """
         Return decision:
-        - 'ALLOW'
-        - 'DENY'
+        - ALLOW
+        - MONITOR
+        - RESTRICT
+        - QUARANTINE
+        - DENY
         """
         pass
+
+    def explain(self, trust_score: float, event: dict, context) -> list[str]:
+        """Opsional: kembalikan daftar alasan keputusan (untuk audit/rationale)."""
+        return [f"trust_score={trust_score}"]

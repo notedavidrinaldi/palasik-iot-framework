@@ -39,12 +39,26 @@ class PalasikAgent:
             )
 
     def load_plugins(self):
-        plugins = self.loader.load()
+        plugins_cfg = self.config.get("palasik", "plugins", default={}) or {}
+        enabled = plugins_cfg.get("enabled")
+        if enabled is None:
+            enabled = []
+        elif isinstance(enabled, str):
+            enabled = [enabled]
+        elif not isinstance(enabled, (list, tuple, set)):
+            enabled = []
+        else:
+            enabled = [name for name in enabled if name]
+
+        plugins = self.loader.load(only_names=enabled)
         for plugin in plugins:
             self.engine.register_plugin(plugin)
 
     def start(self):
         self.engine.start()
+
+    def emit_event(self, event: dict):
+        self.emit(event)
 
     def emit(self, event: dict):
         self.engine.emit(event)
