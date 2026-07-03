@@ -46,6 +46,181 @@ Jika Anda ingin kontribusi pertama yang aman, mulai dari:
 2. [CONTRIBUTING.md](CONTRIBUTING.md)
 3. issue berlabel `good first issue` atau `help wanted`
 
+## Panduan Install dan Menjalankan
+
+Bagian ini ditulis untuk orang yang baru pertama kali mencoba PALASIK dari nol.
+
+### 1. Kebutuhan sistem
+
+- Python `3.10+`
+- `pip`
+- terminal Linux, macOS, atau WSL
+- opsional: virtual environment agar environment tetap bersih
+
+### 2. Instalasi
+
+Cara paling cepat dari PyPI:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install palasik
+```
+
+Kalau Anda sedang mengembangkan dari source repo ini:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -e .[dev]
+```
+
+Setelah terpasang, cek command yang tersedia:
+
+```bash
+palasik --help
+demit --help
+```
+
+### 3. Inisialisasi proyek kerja
+
+Buat folder kerja baru lalu generate baseline config:
+
+```bash
+mkdir palasik-demo
+cd palasik-demo
+palasik init
+```
+
+Ini akan membuat `config.yaml` baseline yang bisa langsung dipakai untuk percobaan awal.
+
+![PALASIK init dan health check](docs/images/readme-init-check.png)
+
+### 4. Jalankan startup health check
+
+Sebelum memproses event sungguhan, validasi dulu bahwa trust engine, policy engine, dan plugin dasar bisa dimuat dengan benar:
+
+```bash
+palasik check --config config.yaml
+```
+
+Jika hasilnya `PASS`, berarti pipeline dasar PALASIK sudah siap dipakai.
+
+Yang divalidasi di langkah ini:
+
+- file konfigurasi bisa dibaca
+- policy baseline valid
+- trust dan policy pipeline dapat berjalan
+- plugin/action dasar dapat dipanggil
+
+### 5. Simulasikan satu event
+
+Siapkan event JSON sederhana:
+
+```bash
+cat > sample-event.json <<'EOF_JSON'
+{
+  "version": "1",
+  "event_id": "evt-demo-01",
+  "timestamp": "2026-07-03T10:00:00Z",
+  "type": "sensor.temperature",
+  "source": {
+    "device_id": "edge-sensor-01",
+    "ip": "192.168.1.10"
+  },
+  "value": 42
+}
+EOF_JSON
+```
+
+Lalu preview keputusan tanpa menyalakan runtime penuh:
+
+```bash
+palasik simulate sample-event.json --config config.yaml
+```
+
+![PALASIK simulate event](docs/images/readme-simulate.png)
+
+Hal yang perlu diperhatikan pada output:
+
+- `decision`: hasil akhir seperti `ALLOW`, `DENY`, atau `RESTRICT`
+- `policy_name`: policy yang sedang aktif
+- `reason_code`: alasan keputusan agar mudah diaudit
+- `trust_score`: skor kepercayaan event
+
+### 6. Cek status dan metrik runtime
+
+Untuk melihat kondisi gateway secara cepat:
+
+```bash
+palasik status --config config.yaml
+```
+
+![PALASIK status dan metrics](docs/images/readme-status.png)
+
+Biasanya operator melihat 5 indikator ini terlebih dahulu:
+
+- `status`: `UP`, `DEGRADED`, atau `DOWN`
+- `events_total`: jumlah event yang sudah diproses
+- `events_allowed` dan `events_denied`: komposisi keputusan
+- `pipeline_avg_latency_ms`: latensi rata-rata pipeline
+- `reason_code_breakdown`: distribusi alasan keputusan
+
+### 7. Jalankan agent PALASIK
+
+Jika config sudah lolos dan simulasi terlihat benar, jalankan agent:
+
+```bash
+palasik run --config config.yaml
+```
+
+Mode ini cocok saat Anda ingin PALASIK menerima event dari adapter yang aktif pada konfigurasi.
+
+### 8. Jalankan sebagai HTTP API
+
+Jika Anda ingin mengekspos PALASIK sebagai service HTTP:
+
+```bash
+palasik serve-api --config config.yaml
+```
+
+Ini berguna untuk integrasi ringan, pengujian lokal, atau gateway yang ingin dihubungkan ke service lain.
+
+### 9. Operasional aman sebelum deploy perubahan policy
+
+Sebelum rollout policy baru:
+
+```bash
+palasik policy-snapshot --config config.yaml
+palasik policy-deploy-check --config config.yaml --require-allow
+```
+
+Jika hasil deploy check jelek atau health turun, rollback cepat:
+
+```bash
+palasik policy-rollback --config config.yaml --snapshot runs/policy_snapshots/<snapshot>
+```
+
+Shortcut operasional yang paling sering dipakai:
+
+```bash
+make edge-health
+make edge-health-wait
+make edge-health-strict
+make edge-post-restart-check
+make edge-post-restart-check-strict
+```
+
+### 10. Setelah berhasil jalan, baca ini
+
+- Quickstart lebih ringkas: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
+- Konfigurasi detail: [docs/CONFIG.md](docs/CONFIG.md)
+- Runbook operasional: [docs/OPERATIONAL_RUNBOOK.md](docs/OPERATIONAL_RUNBOOK.md)
+- Deploy edge: [docs/EDGE_DEPLOYMENT.md](docs/EDGE_DEPLOYMENT.md)
+- Integrasi DEMIT: [docs/DEMIT.md](docs/DEMIT.md)
+
 **Catatan migrasi:** badge `CI-Staging` menunjukkan jalur migrasi ketat. Pipeline akan fail jika terdapat legacy deprecation warning untuk `palasik.core.trust_engine` atau `palasik.core.policy_engine`.
 
 **Cek cepat untuk menghapus `ci-staging.yml`:** hilangkan workflow ini bila semua kondisi berikut terpenuhi:
