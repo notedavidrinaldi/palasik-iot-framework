@@ -1,0 +1,26 @@
+{
+  "version": "1.1",
+  "event_id": "evt-rfid-021",
+  "timestamp": "2026-07-03T04:00:01Z",
+  "type": "access.rfid_scan",
+  "topic": "iot/port/gate/gate-a",
+  "value": "CONT12345",
+  "location": "port-gate-a/entry",
+  "source": {
+    "device_id": "rfid-gate-a",
+    "ip": "192.168.40.9",
+    "protocol": "http"
+  },
+  "metadata": {
+    "tenant": "port-a",
+    "operator_id": "guard-01"
+  },
+  "trust_ctx": {
+    "authenticated": true,
+    "token_ttl_ok": true
+  },
+  "context": {
+    "planned_gate": true,
+    "vehicle_verified": false
+  }
+}

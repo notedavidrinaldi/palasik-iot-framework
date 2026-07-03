@@ -1,0 +1,34 @@
+version: 2
+policy_id: palasik-hospital-v1
+scope: hospital
+default_action: WARN
+rules:
+  - id: freezer-temp-critical
+    name: 'Vaccine freezer over threshold'
+    priority: 100
+    risk_weight: 65
+    decision: QUARANTINE
+    reason_code: FREEZER_TEMP_RISK
+    conditions:
+      - op: gt
+        key: value
+        value: 8
+    actions:
+      - notify_telegram
+      - notify_whatsapp
+      - create_ticket
+
+  - id: freezer-temp-extreme
+    name: 'Extreme freezer issue'
+    priority: 110
+    risk_weight: 90
+    decision: DENY
+    reason_code: FREEZER_TEMP_CRITICAL
+    conditions:
+      - op: gt
+        key: value
+        value: 12
+    actions:
+      - notify_telegram
+      - notify_whatsapp
+      - create_ticket

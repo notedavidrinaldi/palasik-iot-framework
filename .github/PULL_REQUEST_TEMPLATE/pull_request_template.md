@@ -10,6 +10,7 @@ assignees: []
 
 ## Checklist Testing
 - [ ] `make migration-check` telah dijalankan (wajib)
+- [ ] `make policy-deploy-check` (khusus jika ada perubahan policy)
 - [ ] Jika relevan dengan fitur inti trust/policy, juga menjalankan test terkait secara manual
 - [ ] `bash scripts/check_staging_gate.sh --branch=staging` (status required check `migration-gate`) jika PR target ke `staging`
 

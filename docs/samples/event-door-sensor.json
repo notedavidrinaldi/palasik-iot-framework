@@ -1,0 +1,26 @@
+{
+  "version": "1.1",
+  "event_id": "evt-door-001",
+  "timestamp": "2026-07-03T03:12:00Z",
+  "type": "access.door_open",
+  "topic": "iot/building/door/edge-door-01",
+  "value": "open",
+  "location": "building-a/lobby",
+  "source": {
+    "device_id": "door-01",
+    "ip": "192.168.10.11",
+    "protocol": "mqtt"
+  },
+  "metadata": {
+    "tenant": "pilot-a",
+    "operator_id": "op-12"
+  },
+  "trust_ctx": {
+    "authenticated": true,
+    "token_ttl_ok": true
+  },
+  "context": {
+    "schedule": "night_shift",
+    "zone": "building_front_door"
+  }
+}

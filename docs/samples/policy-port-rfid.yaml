@@ -1,0 +1,36 @@
+version: 2
+policy_id: palasik-port-v1
+scope: port
+default_action: QUARANTINE
+rules:
+  - id: port-gate-operator-mismatch
+    name: 'RFID scan with operator mismatch'
+    priority: 140
+    risk_weight: 75
+    decision: DENY
+    reason_code: PORT_OPERATOR_MISMATCH
+    conditions:
+      - op: eq
+        key: type
+        value: access.rfid_scan
+      - op: eq
+        key: context.vehicle_verified
+        value: false
+    actions:
+      - notify_telegram
+      - notify_whatsapp
+
+  - id: port-container-unregistered
+    name: 'Container not in schedule'
+    priority: 130
+    risk_weight: 85
+    decision: BLOCK_ALARM
+    reason_code: PORT_CONTAINER_NOT_REGISTERED
+    conditions:
+      - op: eq
+        key: value
+        value: CONT-UNKNOWN
+    actions:
+      - notify_telegram
+      - create_ticket
+      - quarantine_device

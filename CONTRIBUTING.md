@@ -1,6 +1,6 @@
 # 🤝 Contributing to PALASIK
 
-Terima kasih atas minat Anda untuk berkontribusi pada **PALASIK**  
+Terima kasih atas minat Anda untuk berkontribusi pada **PALASIK**
 (*Pengaman Layer Edge Sistem IoT Kritis*).
 
 PALASIK adalah **open research framework**, sehingga kontribusi tidak hanya berupa kode,
@@ -44,10 +44,22 @@ Kontribusi diharapkan mendukung:
    ```bash
    git checkout -b feature/nama-kontribusi
    ```
+3. Lakukan perubahan.
 4. Commit dengan pesan jelas:
    ```bash
    git commit -m "Add trust scoring experiment"
-  ```
+   ```
+5. Push branch dan buat PR.
+
+## 🚀 Mulai Kontribusi dalam 10 Menit
+1. Buka issue berlabel `good first issue`.
+2. Pilih tugas dengan perubahan kecil (docs, test, helper function).
+3. Fork repo.
+4. Jalankan test cepat:
+   ```bash
+   python -m pytest -q
+   ```
+5. Kirim PR dan cantumkan hasil test di deskripsi.
 
 ## ✅ Migration Gate (untuk PR ke `staging`)
 
@@ -61,6 +73,15 @@ make migration-check
 
 - `python3 scripts/check_legacy_imports.py` (harus tampil `0 issues`)
 - `make test-strict` (`PALASIK_STRICT_DEPRECATION=1`, deprecation menjadi error)
+- `make migration-check` (termasuk `validate-policy` lint untuk config dan policy sampel)
+- `make policy-deploy-check` (smoke deploy check untuk meminimalkan outage)
+
+Jalankan juga `policy-deploy-check` sebelum rollout operasional:
+
+```bash
+python3 -m palasik.cli.main policy-snapshot --config config.yaml
+python3 -m palasik.cli.main policy-deploy-check --config config.yaml --require-allow
+```
 
 PR ke `staging` sebaiknya tidak diteruskan bila:
 - ada legacy import ke `palasik.core.trust_engine` / `palasik.core.policy_engine`
@@ -74,8 +95,7 @@ bash scripts/check_staging_gate.sh --branch=staging
 
 Referensi: [docs/MIGRATION_GATE.md](docs/MIGRATION_GATE.md)
 
-Saat membuat PR, isi template PR (termasuk checklist migration check) agar review bisa
-langsung mengecek kesiapan migrasi.
+Saat membuat PR, isi checklist PR agar review bisa langsung mengecek kesiapan migrasi.
 
 ---
 
@@ -83,12 +103,10 @@ langsung mengecek kesiapan migrasi.
 Kontribusi riset sebaiknya menyertakan:
 
 - Tujuan eksperimen
-
 - Metodologi
-
 - Parameter
-
 - Hasil & diskusi
+
 ---
 
 ## ⚖️ Etika & Legal
@@ -97,11 +115,33 @@ PALASIK bukan alat hacking.
 Kontribusi tidak boleh:
 
 - melakukan intrusive scanning
-
 - melanggar privasi
-
 - menyerang jaringan publik
+
 ---
+
+## 💬 Dapatkan bantuan
+- Buka issue dengan label `question` untuk pertanyaan operasional.
+- Bahas desain besar melalui Discussion.
+
+## 📚 Rujukan komunitas
+- Strategi pertumbuhan: [docs/GROWTH.md](docs/GROWTH.md)
+- Label kontribusi: [docs/LABELS_COMMUNITY.md](docs/LABELS_COMMUNITY.md)
+- Checklist aktivasi komunitas: [docs/CHECKLIST_COMMUNITY_BOOTSTRAP.md](docs/CHECKLIST_COMMUNITY_BOOTSTRAP.md)
+- Paket presentasi GitHub: [docs/GITHUB_REPO_PRESENTATION.md](docs/GITHUB_REPO_PRESENTATION.md)
+
+## 🏷️ Label Wajib
+
+- `good first issue` untuk tugas yang ringan (pemula).
+- `help wanted` untuk issue yang butuh bantuan komunitas.
+- `question` untuk pertanyaan setup/operasional.
+- `area:docs`, `area:plugin`, `area:policy`, `discussion-needed` untuk klasifikasi area.
+
+Untuk pengaturan label otomatis jalankan:
+
+```bash
+./scripts/setup-community-labels.sh
+```
 
 ## 📧 Kontak
 
@@ -111,39 +151,32 @@ GitHub: https://github.com/notedavidrinaldi
 
 Kami menantikan kolaborasi Anda 🚀
 
----
+## 💬 Diskusi Komunitas
+Untuk pertanyaan awal dan ide pengembangan, gunakan
+GitHub Discussions: https://github.com/notedavidrinaldi/palasik-iot-framework/discussions
 
-# 2️⃣ GitHub Issue Templates (Agar Ramai & Terarah)
+Panduan aktifasi untuk maintainer: [docs/DISCUSSIONS_SETUP.md](docs/DISCUSSIONS_SETUP.md)
 
-### 📄 `.github/ISSUE_TEMPLATE/feature_request.md`
+## 🧭 Paket tugas pemula
+Untuk mulai langsung, lihat
+- [Good First Issues](docs/GOOD_FIRST_ISSUES.md)
+- [Wiki Good First Issues](wiki-content/Good-First-Issues.md)
+- Tandai issue dengan `good first issue`.
 
-```md
----
-name: Feature Request
-about: Usulan fitur / ide riset baru
-title: "[FEATURE] "
-labels: enhancement
----
+## 🔧 Bootstrap tugas pemula (otomatis)
+Jika sudah login gh, Anda bisa membuat 10 issue dari file template secara otomatis:
 
-## 📌 Deskripsi Singkat
-Jelaskan fitur atau ide riset yang diusulkan.
+```bash
+./scripts/bootstrap-good-first-issues.sh
+```
 
-## 🎯 Tujuan
-Masalah apa yang ingin diselesaikan?
+Untuk validasi publikasi paket komunitas, lihat checklist:
+[docs/CHECKLIST_COMMUNITY_BOOTSTRAP.md](docs/CHECKLIST_COMMUNITY_BOOTSTRAP.md) bagian
+“Checklist Siap Publish Good First Issues”.
 
-## 🧠 Konteks Riset
-Apakah relevan untuk:
-- Trust Engine
-- Policy Engine
-- Dataset
-- Edge Security
-
-## 🔬 Referensi (Opsional)
-Paper / standar / studi terkait.
-
-
-
-
-
-
-
+## ⚡ Cara mulai kontribusi cepat
+- 10 issue pemula: [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md)
+- Paket copy-paste issue: [docs/GOOD_FIRST_ISSUES_BATCH.md](docs/GOOD_FIRST_ISSUES_BATCH.md)
+- Tutorial posting cepat: [docs/CREATE_10_ISSUES_FAST.md](docs/CREATE_10_ISSUES_FAST.md)
+- Checklist siap publish paket komunitas: [docs/PUBLISH_PACKAGE_READINESS.md](docs/PUBLISH_PACKAGE_READINESS.md)
+- Template announcement publikasi komunitas: [docs/COMMUNITY_PUBLISH_ANNOUNCEMENT.md](docs/COMMUNITY_PUBLISH_ANNOUNCEMENT.md)

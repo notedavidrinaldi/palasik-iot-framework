@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "event_id": "evt-2026-0701-001",
+  "timestamp": "2026-07-01T09:00:00Z",
+  "type": "sensor.sample",
+  "topic": "palasik/sensor/temp",
+  "source": {
+    "device_id": "edge-sensor-01",
+    "ip": "192.168.1.10",
+    "protocol": "mqtt"
+  },
+  "value": 42
+}

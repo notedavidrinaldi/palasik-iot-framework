@@ -32,6 +32,36 @@ Menjaga fase migrasi arsitektur tetap aman dengan memastikan
      ```
    - Wajib diperlakukan sebagai command rekomendasi sebelum PR ke `staging`.
 
+4. **Policy lint (fase 2)**
+   - `make migration-check` juga mengeksekusi validasi policy untuk:
+     - `examples/mqtt_zero_trust_gateway/config.yaml`
+     - `docs/samples/policy-baseline.yaml`
+   - Keduanya harus lolos `validate-policy` agar jalur lint tetap konsisten.
+
+5. **Policy deploy guard (fase 4)**
+   - Sebelum deployment, jalankan check final agar tidak outage:
+     ```bash
+     python3 -m palasik.cli.main policy-deploy-check \
+       --config examples/mqtt_zero_trust_gateway/config.yaml \
+       --smoke-events docs/samples/policy-smoke-events.json \
+       --max-deny-ratio 0.95 \
+       --require-allow
+     ```
+   - Command harus PASS sebelum rollout policy.
+
+6. **Snapshot + rollback baseline (fase 4)**
+   - Ambil snapshot sebelum rollout:
+     ```bash
+     python3 -m palasik.cli.main policy-snapshot --config config.yaml
+     ```
+   - Untuk rollback cepat:
+     ```bash
+     python3 -m palasik.cli.main policy-rollback \
+       --config config.yaml \
+       --snapshot <path-snapshot>
+     ```
+   - Backup otomatis akan disimpan ke `runs/policy_backups`.
+
 ## Status check di GitHub
 Workflow `ci-staging.yml` mengekspos job berikut:
 - `migration-gate` (required check)

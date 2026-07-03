@@ -1,0 +1,34 @@
+version: 2
+policy_id: palasik-building-v1
+scope: building
+default_action: DENY
+rules:
+  - id: building-door-time-zone
+    name: 'Door access allowed in operational window'
+    priority: 100
+    risk_weight: 15
+    decision: ALLOW
+    reason_code: BUILDING_ACCESS_ALLOWED
+    conditions:
+      - op: eq
+        key: type
+        value: access.door_open
+      - op: eq
+        key: location
+        value: building-a/lobby
+    actions:
+      - none
+
+  - id: building-door-anomaly
+    name: 'Door open event from untrusted token'
+    priority: 90
+    risk_weight: 60
+    decision: DENY
+    reason_code: BUILDING_ACCESS_TRUST_FAIL
+    conditions:
+      - op: eq
+        key: trust_ctx.authenticated
+        value: false
+    actions:
+      - notify_telegram
+

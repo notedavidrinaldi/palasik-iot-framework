@@ -45,6 +45,43 @@ class ConfigLoader:
         if palasik.get("plugins") is None:
             palasik["plugins"] = {"enabled": []}
 
+        if palasik.get("observability") is None:
+            palasik["observability"] = {}
+
+        if palasik.get("audit_log") is None:
+            palasik["audit_log"] = None
+
+        if palasik.get("actions") is None:
+            palasik["actions"] = {
+                "timeout": 5,
+                "max_retries": 2,
+                "retry_backoff_seconds": 0.0,
+                "idempotency_cache_size": 1024,
+                "routes": {},
+                "webhook": {},
+                "telegram": {},
+                "whatsapp": {},
+                "relay": {},
+            }
+
+        if palasik.get("event") is None:
+            palasik["event"] = {"max_age_seconds": 600}
+
+        if palasik.get("risk") is None:
+            palasik["risk"] = {
+                "warn_threshold": 55,
+                "quarantine_threshold": 75,
+                "critical_threshold": 92,
+                "critical_action": "BLOCK_ALARM",
+            }
+
+        if palasik.get("correlation") is None:
+            palasik["correlation"] = {
+                "window_seconds": 120,
+                "repeat_threshold": 3,
+                "risk_threshold": 75,
+            }
+
     def load_env(self):
         palasik = self.config["palasik"]
         broker = palasik["broker"]
@@ -65,6 +102,86 @@ class ConfigLoader:
 
         if os.getenv("PALASIK_DECISION_LOG"):
             palasik["decision_log"] = os.getenv("PALASIK_DECISION_LOG")
+
+        observability = palasik["observability"]
+        if os.getenv("PALASIK_METRICS_FILE"):
+            observability["metrics_file"] = os.getenv("PALASIK_METRICS_FILE")
+
+        if os.getenv("PALASIK_DENY_SPIKE_THRESHOLD"):
+            observability.setdefault("alert", {})
+            observability["alert"]["deny_spike_threshold"] = os.getenv("PALASIK_DENY_SPIKE_THRESHOLD")
+
+        if os.getenv("PALASIK_TRUST_DROP_THRESHOLD"):
+            observability.setdefault("alert", {})
+            observability["alert"]["trust_score_drop_threshold"] = os.getenv("PALASIK_TRUST_DROP_THRESHOLD")
+
+        if os.getenv("PALASIK_AUDIT_LOG"):
+            palasik["audit_log"] = os.getenv("PALASIK_AUDIT_LOG")
+
+        actions = palasik["actions"]
+        if os.getenv("PALASIK_ACTION_TIMEOUT"):
+            actions["timeout"] = _safe_convert_float(
+                os.getenv("PALASIK_ACTION_TIMEOUT"),
+                default=actions.get("timeout", 5),
+            )
+        if os.getenv("PALASIK_ACTION_MAX_RETRIES"):
+            actions["max_retries"] = _safe_convert_int(
+                os.getenv("PALASIK_ACTION_MAX_RETRIES"),
+                default=actions.get("max_retries", 2),
+            )
+        if os.getenv("PALASIK_ACTION_RETRY_BACKOFF_SECONDS"):
+            actions["retry_backoff_seconds"] = _safe_convert_float(
+                os.getenv("PALASIK_ACTION_RETRY_BACKOFF_SECONDS"),
+                default=actions.get("retry_backoff_seconds", 0.0),
+            )
+
+        event = palasik["event"]
+        if os.getenv("PALASIK_EVENT_MAX_AGE_SECONDS"):
+            event["max_age_seconds"] = _safe_convert_int(
+                os.getenv("PALASIK_EVENT_MAX_AGE_SECONDS"),
+                default=600,
+            )
+
+        risk = palasik["risk"]
+        if os.getenv("PALASIK_RISK_WARN_THRESHOLD"):
+            risk["warn_threshold"] = _safe_convert_int(
+                os.getenv("PALASIK_RISK_WARN_THRESHOLD"),
+                default=risk.get("warn_threshold", 55),
+            )
+
+        if os.getenv("PALASIK_RISK_QUARANTINE_THRESHOLD"):
+            risk["quarantine_threshold"] = _safe_convert_int(
+                os.getenv("PALASIK_RISK_QUARANTINE_THRESHOLD"),
+                default=risk.get("quarantine_threshold", 75),
+            )
+
+        if os.getenv("PALASIK_RISK_CRITICAL_THRESHOLD"):
+            risk["critical_threshold"] = _safe_convert_int(
+                os.getenv("PALASIK_RISK_CRITICAL_THRESHOLD"),
+                default=risk.get("critical_threshold", 92),
+            )
+
+        if os.getenv("PALASIK_RISK_CRITICAL_ACTION"):
+            risk["critical_action"] = os.getenv("PALASIK_RISK_CRITICAL_ACTION")
+
+        correlation = palasik["correlation"]
+        if os.getenv("PALASIK_CORRELATION_WINDOW_SECONDS"):
+            correlation["window_seconds"] = _safe_convert_int(
+                os.getenv("PALASIK_CORRELATION_WINDOW_SECONDS"),
+                default=correlation.get("window_seconds", 120),
+            )
+
+        if os.getenv("PALASIK_CORRELATION_REPEAT_THRESHOLD"):
+            correlation["repeat_threshold"] = _safe_convert_int(
+                os.getenv("PALASIK_CORRELATION_REPEAT_THRESHOLD"),
+                default=correlation.get("repeat_threshold", 3),
+            )
+
+        if os.getenv("PALASIK_CORRELATION_RISK_THRESHOLD"):
+            correlation["risk_threshold"] = _safe_convert_int(
+                os.getenv("PALASIK_CORRELATION_RISK_THRESHOLD"),
+                default=correlation.get("risk_threshold", 75),
+            )
 
     def get(self, *keys, default=None):
         ref = self.config

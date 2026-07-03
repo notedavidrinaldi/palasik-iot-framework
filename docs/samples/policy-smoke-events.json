@@ -1,0 +1,29 @@
+[
+  {
+    "type": "sensor.sample",
+    "source": {
+      "device_id": "edge-01",
+      "ip": "127.0.0.1"
+    },
+    "topic": "palasik/sensor/temp",
+    "value": 42
+  },
+  {
+    "type": "sensor.sample",
+    "source": {
+      "device_id": "unknown",
+      "ip": "127.0.0.1"
+    },
+    "topic": "palasik/sensor/temp",
+    "value": 42
+  },
+  {
+    "type": "sensor.sample",
+    "source": {
+      "device_id": "edge-01",
+      "ip": "127.0.0.1"
+    },
+    "topic": "palasik/sensor/temp",
+    "value": 12
+  }
+]

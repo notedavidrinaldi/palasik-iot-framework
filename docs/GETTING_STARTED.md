@@ -1,184 +1,107 @@
 # Getting Started with PALASIK
 
-Dokumen ini memandu penggunaan PALASIK dari nol
-hingga gateway Zero Trust pertama berjalan.
-
----
+Panduan singkat untuk menjalankan PALASIK dari nol.
 
 ## 1. Instalasi
 
 ```bash
 pip install palasik
 ```
-Isi (copas mentah):
 
-```bash
-python - <<'EOF'
-import palasik
-print(palasik.__version__)
-EOF
-```
+## 2. Inisialisasi
 
-## 2. Inisialisasi Project
 ```bash
 mkdir palasik-demo
 cd palasik-demo
 palasik init
 ```
 
-File yang dihasilkan:
+Perintah ini membuat `config.yaml` dengan policy baseline.
 
-```code
-config.yaml
+## 3. Health Check
+
+```bash
+palasik check
 ```
 
-## 3. Contoh Konfigurasi
+Cek ini memastikan agent bisa load config, menjalankan trust/policy pipeline,
+and semua command startup berjalan.
 
-```yaml
-palasik:
-broker:
-host: localhost
-port: 1883
-topic: palasik/sensor/#
+## 4. Simulasi Keputusan
 
+Buat event test:
 
-policy:
-type: allow_deny
-threshold: 0.7
+```bash
+cat > sample-event.json <<'EOF_JSON'
+{
+  "version": "1",
+  "event_id": "evt-startup-01",
+  "timestamp": "2026-07-01T09:00:00Z",
+  "type": "sensor.sample",
+  "source": {
+    "device_id": "edge-sensor-01",
+    "ip": "192.168.1.10"
+  },
+  "value": 42
+}
+EOF_JSON
 
-
-plugins:
-enabled:
-- logger
+palasik simulate sample-event.json
 ```
-## 4. Menjalankan Gateway
+
+## 5. Memantau Status
+
+```bash
+palasik status --config config.yaml
+```
+
+Output berisi status, counters, dan alerts:
+
+```text
+{
+  "command": "status",
+  "status": "UP",
+  "metrics": {
+    "events_total": 12,
+    "events_allowed": 11,
+    "events_denied": 1,
+    "avg_latency_ms": 2.5,
+    "reason_code_breakdown": {
+      "TRUSTED_DEVICE": 10,
+      "UNKNOWN_DEVICE": 1
+    },
+    "alerts": [...]
+  }
+}
+```
+
+## 5b. Rollout policy aman
+
+Sebelum deploy policy baru, ambil snapshot dan jalankan smoke check:
+
+```bash
+python3 -m palasik.cli.main policy-snapshot --config config.yaml
+python3 -m palasik.cli.main policy-deploy-check --config config.yaml --require-allow
+```
+
+Jika perlu rollback cepat:
+
+```bash
+python3 -m palasik.cli.main policy-rollback \
+  --config config.yaml \
+  --snapshot runs/policy_snapshots/<file>
+```
+
+Untuk melihat metrik mentah (sehingga bisa dipasang ke dashboard):
+
+```bash
+cat runs/metrics.json
+```
+
+## 6. Menjalankan Gateway
 
 ```bash
 palasik run --config config.yaml
 ```
 
-Jika berhasil:
-
-```code
-[PALASIK] Starting agent...
-```
-
-## 5. Kirim Event Uji
-```bash
-mosquitto_pub -t palasik/sensor/temp -m '{"value": 42}'
-```
-
-## 6. Apa yang Terjadi?
-
-1. Event diterima adapter
-
-2. Trust Engine menghitung skor
-
-3. Policy Engine memutuskan
-
-4. Plugin mengeksekusi aksi
-PALASIK tidak pernah mempercayai event secara default.
-
----
-
-### 2️⃣ README contoh (example-first)
-User **lebih percaya contoh daripada klaim**.
-
-**Edit file:**
-```bash
-nano examples/mqtt_zero_trust_gateway/README.md
-```
-
-isi:
-
-# MQTT Zero Trust Gateway Example
-
-Contoh gateway IoT berbasis MQTT
-dengan kebijakan Zero Trust menggunakan PALASIK.
-
----
-
-## Cara Menjalankan
-
-```bash
-cd examples/mqtt_zero_trust_gateway
-./run.sh
-```
-
-Struktur
-
-```code
-.
-├── config.yaml
-├── run.sh
-└── README.md
-```
-
-Eksperimen
-Event Trusted
-
-```bash
-mosquitto_pub -t palasik/sensor/temp -m '{"value": 30}'
-```
-Event Suspicious
-
-```bash
-mosquitto_pub -t palasik/sensor/temp -m '{"value": 999}'
-```
-
-Perhatikan perbedaan keputusan policy.
-
-
----
-
-### 3️⃣ Tambah badge CI di README utama
-Ini **sinyal kepercayaan**.
-
-Tambahkan di `README.md` bagian atas:
-```md
-[![CI](https://github.com/notedavidrinaldi/palasik-iot-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/notedavidrinaldi/palasik-iot-framework/actions)
-```
-### 4️⃣ CONTRIBUTING.md (pendek tapi tegas)
-
-Biar orang nggak asal PR.
-
-```bash
-nano CONTRIBUTING.md
-```
-
-# Contributing to PALASIK
-
-Terima kasih tertarik berkontribusi.
-
-## Aturan Dasar
-- Semua PR **harus lulus pytest**
-- Tambahkan test untuk fitur baru
-- Jangan refactor tanpa alasan jelas
-
-## Setup Dev
-```bash
-python -m pip install -e .
-python -m pip install -r requirements-dev.txt
-python -m pytest
-```
-PR tanpa test kemungkinan besar ditolak.
-
-### 2️⃣ Jalur implementasi yang diprioritaskan
-
-Selama fase sekarang, gunakan jalur API utama berikut:
-
-- Trust: `palasik.trust`
-- Policy: `palasik.policy`
-
-`palasik.core.trust_engine` dan `palasik.core.policy_engine` hanya untuk kompatibilitas lama
-dan akan dianggap legacy pada migrasi berikutnya.
-
-
----
-
-## 5️⃣ Commit docs (jangan dicampur)
-```bash
-git add docs examples README.md CONTRIBUTING.md
-git commit -m "docs: add getting started, examples, and contribution guide"
-git push
-```
+Jika berhasil, agent akan aktif menunggu event.

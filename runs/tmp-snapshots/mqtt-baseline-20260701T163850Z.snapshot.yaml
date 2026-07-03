@@ -1,0 +1,12 @@
+metadata:
+  created_at_utc: '2026-07-01T16:38:50.183198+00:00'
+  source_config: examples/mqtt_zero_trust_gateway/config.yaml
+  policy_signature: e1b551088bee6de3debc679932a066f7c65d455a1dfa4c6b2111c2650256440d
+  policy_version: '1'
+policy:
+  version: '1'
+  type: allow_deny
+  default_deny: true
+  default_action: DENY
+  policy_id: mqtt-baseline
+  threshold: 0.7
