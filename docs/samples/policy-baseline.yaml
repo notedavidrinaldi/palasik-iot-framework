@@ -1,0 +1,25 @@
+version: 1
+policy_id: palasik-baseline
+default_deny: true
+default_action: DENY
+actions:
+  - ALLOW
+  - DENY
+rules:
+  - id: deny_unknown_device
+    action: DENY
+    reason_code: UNKNOWN_DEVICE
+    priority: 100
+    condition:
+      op: eq
+      key: source.device_id
+      value: unknown
+
+  - id: allow_trusted_device
+    action: ALLOW
+    reason_code: TRUSTED_DEVICE
+    priority: 10
+    condition:
+      op: gte
+      key: trust_score
+      value: 0.75

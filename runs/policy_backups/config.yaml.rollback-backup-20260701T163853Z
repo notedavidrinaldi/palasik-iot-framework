@@ -1,0 +1,31 @@
+palasik:
+  broker:
+    host: localhost
+    port: 1883
+    topic: palasik/sensor/#
+
+  policy:
+    version: "1"
+    type: allow_deny
+    default_deny: true
+    default_action: DENY
+    policy_id: mqtt-baseline
+    threshold: 0.7
+
+  plugins:
+    enabled:
+      - logger
+      - audit
+
+  observability:
+    metrics_file: runs/metrics.json
+    alert:
+      deny_spike_threshold: 0.45
+      trust_score_drop_threshold: 0.25
+
+  audit_log: runs/audit.jsonl
+
+  http:
+    enabled: false
+    endpoint: "https://example.com/webhook"
+    timeout: 5

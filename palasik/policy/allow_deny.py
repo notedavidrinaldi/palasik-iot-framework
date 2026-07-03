@@ -19,3 +19,8 @@ class AllowDenyPolicy(PolicyEngine):
         if trust_score >= self.threshold:
             return [f"trust_score={trust_score} >= threshold={self.threshold}: ALLOW"]
         return [f"trust_score={trust_score} < threshold={self.threshold}: DENY"]
+
+    def reason_code(self, trust_score: float, event: dict, context) -> str | None:
+        if trust_score >= self.threshold:
+            return "TRUST_OK"
+        return "TRUST_LOW"

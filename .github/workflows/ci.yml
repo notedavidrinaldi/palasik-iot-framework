@@ -2,15 +2,17 @@ name: PALASIK CI
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
 
@@ -25,10 +27,12 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python -V
+          python -m pip --version
           python -m pip install --upgrade pip
           pip install -e .
           pip install pytest
 
       - name: Run tests
         run: |
-          pytest -v
+          python -m pytest -v

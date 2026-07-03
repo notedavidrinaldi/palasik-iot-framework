@@ -1,0 +1,32 @@
+version: 2
+policy_id: palasik-factory-v1
+scope: factory
+default_action: ALLOW
+rules:
+  - id: factory-vibration-correlated
+    name: 'Vibration high in trend window'
+    priority: 120
+    risk_weight: 80
+    decision: DENY
+    reason_code: MACHINE_VIBRATION_CORRELATED
+    conditions:
+      - op: gt
+        key: value
+        value: 8
+    actions:
+      - plc_stop
+      - create_ticket
+      - notify_telegram
+
+  - id: machine-allow-normal
+    name: 'Normal vibration value'
+    priority: 10
+    risk_weight: 10
+    decision: ALLOW
+    reason_code: MACHINE_VIBRATION_OK
+    conditions:
+      - op: lte
+        key: value
+        value: 8
+    actions:
+      - none

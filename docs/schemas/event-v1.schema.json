@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://notedavidrinaldi.github.io/palasik/schemas/event-v1.schema.json",
+  "title": "PALASIK Event v1 Schema",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["version", "event_id", "timestamp", "type", "source"],
+  "properties": {
+    "version": {
+      "const": "1"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "topic": {
+      "type": ["string", "null"]
+    },
+    "value": {
+      "type": ["number", "string", "null"]
+    },
+    "source": {
+      "type": "object",
+      "required": ["device_id", "ip"],
+      "properties": {
+        "device_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ip": {
+          "type": "string",
+          "minLength": 1
+        },
+        "protocol": {
+          "type": "string"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "raw": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "challenge_passed": {
+      "type": ["boolean", "string", "number", "null"]
+    }
+  }
+}

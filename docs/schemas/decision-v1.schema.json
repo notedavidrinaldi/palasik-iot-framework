@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://notedavidrinaldi.github.io/palasik/schemas/decision-v1.schema.json",
+  "title": "PALASIK Decision Contract v1",
+  "type": "object",
+  "required": ["event_id", "decision", "risk_score", "risk_label", "reason", "actions", "trace_id", "created_at_utc"],
+  "properties": {
+    "event_id": { "type": "string", "minLength": 1 },
+    "risk_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "risk_label": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL", "UNKNOWN"] },
+    "decision": {
+      "type": "string",
+      "enum": ["ALLOW", "WARN", "QUARANTINE", "DENY", "BLOCK_ALARM"]
+    },
+    "matched_rules": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "reason": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "actions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "correlation_id": { "type": ["string", "null"] },
+    "trace_id": { "type": "string", "minLength": 1 },
+    "ttl_seconds": { "type": "integer", "minimum": 1 },
+    "created_at_utc": { "type": "string", "format": "date-time" }
+  }
+}

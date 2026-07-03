@@ -2,6 +2,15 @@
 
 from palasik.core.context import PalasikContext
 from palasik.core.engine import PalasikEngine
+from palasik.core.action_dispatcher import (
+    ActionDispatcher,
+    HTTPForwardActionAdapter,
+    LoggingActionAdapter,
+    RelayActionAdapter,
+    TelegramActionAdapter,
+    WebhookActionAdapter,
+    WhatsAppActionAdapter,
+)
 from palasik.core.config import ConfigLoader
 from palasik.core.plugin_loader import PluginLoader
 
@@ -37,6 +46,55 @@ class PalasikAgent:
                 endpoint=http_cfg.get("endpoint"),
                 timeout=http_cfg.get("timeout", 5),
             )
+
+        actions_cfg = self.config.get("palasik", "actions", default={}) or {}
+        adapters = {
+            "logger": LoggingActionAdapter(self.context.logger),
+        }
+
+        webhook_cfg = actions_cfg.get("webhook", {}) or {}
+        if webhook_cfg.get("endpoint"):
+            adapters["webhook"] = WebhookActionAdapter(
+                endpoint=webhook_cfg.get("endpoint"),
+                headers=webhook_cfg.get("headers"),
+            )
+
+        telegram_cfg = actions_cfg.get("telegram", {}) or {}
+        if telegram_cfg.get("bot_token") and telegram_cfg.get("chat_id"):
+            adapters["telegram"] = TelegramActionAdapter(
+                bot_token=telegram_cfg.get("bot_token"),
+                chat_id=telegram_cfg.get("chat_id"),
+            )
+
+        whatsapp_cfg = actions_cfg.get("whatsapp", {}) or {}
+        if whatsapp_cfg.get("endpoint"):
+            adapters["whatsapp"] = WhatsAppActionAdapter(
+                endpoint=whatsapp_cfg.get("endpoint"),
+                headers=whatsapp_cfg.get("headers"),
+            )
+
+        relay_cfg = actions_cfg.get("relay", {}) or {}
+        if relay_cfg.get("endpoint"):
+            adapters["relay"] = RelayActionAdapter(
+                endpoint=relay_cfg.get("endpoint"),
+                headers=relay_cfg.get("headers"),
+            )
+
+        if self.context.http_adapter is not None:
+            adapters["http_forward"] = HTTPForwardActionAdapter(self.context.http_adapter)
+
+        self.context.audit_service.path = self.context.audit_log
+        self.context.action_dispatcher = ActionDispatcher(
+            logger=self.context.logger,
+            metrics=self.context.metrics,
+            audit_service=self.context.audit_service,
+            adapters=adapters,
+            action_map=actions_cfg.get("routes", {}) or {},
+            default_timeout=actions_cfg.get("timeout", 5),
+            max_retries=actions_cfg.get("max_retries", 2),
+            retry_backoff_seconds=actions_cfg.get("retry_backoff_seconds", 0.0),
+            idempotency_ttl=actions_cfg.get("idempotency_cache_size", 1024),
+        )
 
     def load_plugins(self):
         plugins_cfg = self.config.get("palasik", "plugins", default={}) or {}

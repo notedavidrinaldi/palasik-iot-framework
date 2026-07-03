@@ -1,8 +1,84 @@
 palasik:
+  broker:
+    host: localhost
+    port: 1883
+    topic: palasik/sensor/#
+
   http:
     enabled: true
-    endpoint: "https://example.com/webhook"
+    endpoint: "https://collector.internal.example/events"
     timeout: 5
+
+  policy:
+    version: "1"
+    default_deny: true
+    default_action: DENY
+    type: rule
+    rules:
+      - id: deny_unknown_device
+        action: DENY
+        reason_code: UNKNOWN_DEVICE
+        condition:
+          op: eq
+          key: source.device_id
+          value: unknown
+      - id: quarantine_hot_device
+        action: BLOCK_ALARM
+        reason_code: HIGH_RISK_DEVICE
+        condition:
+          op: gte
+          key: risk_score
+          value: 92
+      - id: allow_trusted_device
+        action: ALLOW
+        reason_code: TRUSTED_DEVICE
+        condition:
+          op: gte
+          key: trust_score
+          value: 0.75
+
   plugins:
     enabled:
       - logger
+      - audit
+
+  observability:
+    metrics_file: runs/metrics.json
+    alert:
+      deny_spike_threshold: 0.45
+      trust_score_drop_threshold: 0.25
+
+  health:
+    degraded_http_mode: ok
+
+  decision_log: runs/decisions.jsonl
+  audit_log: runs/audit.jsonl
+
+  actions:
+    timeout: 3.0
+    max_retries: 3
+    retry_backoff_seconds: 0.5
+    idempotency_cache_size: 2048
+    routes:
+      create_ticket: webhook
+      notify_telegram_ops: telegram
+      notify_whatsapp_ops: whatsapp
+      relay_off: relay
+      plc_stop: relay
+      http_forward: http_forward
+    webhook:
+      endpoint: "https://ops.internal.example/hooks/palasik"
+      headers:
+        Authorization: "Bearer change-me"
+        X-PALASIK-Env: "staging"
+    telegram:
+      bot_token: "123456:replace-me"
+      chat_id: "-1001234567890"
+    whatsapp:
+      endpoint: "https://graph.facebook.example/v1/messages"
+      headers:
+        Authorization: "Bearer change-me"
+    relay:
+      endpoint: "http://192.168.1.20/api/relay"
+      headers:
+        X-Relay-Key: "change-me"

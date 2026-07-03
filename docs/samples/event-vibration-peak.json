@@ -1,0 +1,25 @@
+{
+  "version": "1.1",
+  "event_id": "evt-vibe-015",
+  "timestamp": "2026-07-03T03:35:10Z",
+  "type": "machine.vibration",
+  "topic": "iot/factory/machine/mix-press",
+  "value": 8.9,
+  "location": "factory-a/line-2",
+  "source": {
+    "device_id": "vibe-press-01",
+    "ip": "192.168.30.5",
+    "protocol": "mqtt"
+  },
+  "metadata": {
+    "tenant": "factory-a",
+    "machine_group": "press"
+  },
+  "trust_ctx": {
+    "authenticated": true,
+    "token_ttl_ok": true
+  },
+  "context": {
+    "trend_window_min": 10
+  }
+}

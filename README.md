@@ -3,12 +3,103 @@
 
 [![PyPI](https://img.shields.io/pypi/v/palasik.svg)](https://pypi.org/project/palasik/)
 [![Python](https://img.shields.io/pypi/pyversions/palasik.svg)](https://pypi.org/project/palasik/)
+[![CI-Staging](https://github.com/notedavidrinaldi/palasik-iot-framework/actions/workflows/ci-staging.yml/badge.svg)](https://github.com/notedavidrinaldi/palasik-iot-framework/actions/workflows/ci-staging.yml)
 [![License](https://img.shields.io/github/license/notedavidrinaldi/palasik-iot-framework)](LICENSE)
 [![Status](https://img.shields.io/badge/status-stable-green)]()
 
+PALASIK adalah framework Python untuk **Zero Trust IoT event enforcement** di **edge/gateway**.
+Repo ini cocok untuk orang yang ingin:
+
+- mencoba pipeline keputusan `trust -> policy -> action` dalam hitungan menit
+- membangun gateway IoT yang lebih aman di Raspberry Pi, MQTT, atau HTTP event flow
+- berkontribusi pada framework riset yang terbuka untuk docs, test, plugin, dan eksperimen
+
+## Start Here
+
+- Quickstart: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
+- Arsitektur: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Runbook operasional: [docs/OPERATIONAL_RUNBOOK.md](docs/OPERATIONAL_RUNBOOK.md)
+- Deploy edge: [docs/EDGE_DEPLOYMENT.md](docs/EDGE_DEPLOYMENT.md)
+- Cara kontribusi: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Good first issues: [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md)
+- Diskusi komunitas: https://github.com/notedavidrinaldi/palasik-iot-framework/discussions
+
+## Kenapa layak di-fork?
+
+- **Research-ready**: cocok untuk eksperimen trust scoring, policy engine, dan IoT security workflow.
+- **Practical ops**: sudah punya health contract, deploy gate, rollback, dan post-restart check.
+- **Contribution-friendly**: kontribusi docs, sample config, plugin, test, dan use case sama berharganya dengan perubahan core.
+
+## Quick Demo (60 detik)
+
+```bash
+pip install palasik
+palasik init
+palasik check --config config.yaml
+palasik simulate docs/samples/policy-smoke-events.json --config config.yaml
+palasik status --config config.yaml
+```
+
+Jika Anda ingin kontribusi pertama yang aman, mulai dari:
+
+1. [docs/GOOD_FIRST_ISSUES.md](docs/GOOD_FIRST_ISSUES.md)
+2. [CONTRIBUTING.md](CONTRIBUTING.md)
+3. issue berlabel `good first issue` atau `help wanted`
+
+**Catatan migrasi:** badge `CI-Staging` menunjukkan jalur migrasi ketat. Pipeline akan fail jika terdapat legacy deprecation warning untuk `palasik.core.trust_engine` atau `palasik.core.policy_engine`.
+
+**Cek cepat untuk menghapus `ci-staging.yml`:** hilangkan workflow ini bila semua kondisi berikut terpenuhi:
+
+1. Legacy import scan = `0 issues`.
+2. `make migration-check` berjalan clean (termasuk strict deprecation test).
+
+Cek cepat otomatis tersedia via:
+
+```bash
+python3 scripts/check_legacy_imports.py
+make migration-check
+```
+
+Untuk menjadikan ini gate yang benar-benar mandatory pada branch `staging`, aktifkan check `migration-gate` sebagai required status check di branch protection.
+Untuk verifikasi cepat apakah sudah wajib, gunakan script audit:
+
+```bash
+bash scripts/check_staging_gate.sh --branch=staging
+```
+
+Untuk meng-enable dan melihat payload update branch protection (dan bisa dicoba dulu tanpa auth via `--dry-run`):
+
+```bash
+bash scripts/apply_staging_branch_protection.sh --dry-run
+bash scripts/apply_staging_branch_protection.sh --branch=staging
+```
+
+Dokumen lengkap: [docs/MIGRATION_GATE.md](docs/MIGRATION_GATE.md)
+Konfigurasi operasional: [docs/CONFIG.md](docs/CONFIG.md)
+Runbook operasional: [docs/OPERATIONAL_RUNBOOK.md](docs/OPERATIONAL_RUNBOOK.md)
+Draft deploy edge: [docs/EDGE_DEPLOYMENT.md](docs/EDGE_DEPLOYMENT.md)
+
+Shortcut operasional yang paling sering dipakai:
+
+```bash
+make edge-health
+make edge-health-wait
+make edge-health-strict
+make edge-post-restart-check
+make edge-post-restart-check-strict
+```
+
+Ringkasannya:
+
+- `edge-health`: cek health cepat
+- `edge-health-wait`: cek health dengan retry lebih panjang
+- `edge-health-strict`: hanya lolos jika status `UP`
+- `edge-post-restart-check`: `check-startup` lalu tunggu health
+- `edge-post-restart-check-strict`: versi gate ketat pasca-restart
+
 ---
 
-## 🔷 What is DEMIT?
+## 🔷 Apa Itu DEMIT?
 
 **DEMIT** adalah kerangka **super app** yang dirancang untuk menampung beberapa aplikasi digital
 dalam satu runtime terpadu.
@@ -30,7 +121,7 @@ Detail runtime DEMIT:
 
 ---
 
-## 🔐 What is PALASIK?
+## 🔐 Apa Itu PALASIK?
 
 **PALASIK** (Policy-Aware Lightweight Adaptive Security for IoT) adalah **framework Python berbasis Zero Trust**
 yang berfungsi sebagai **security enforcement layer** di **edge / gateway IoT**.
@@ -84,7 +175,7 @@ PALASIK cocok digunakan untuk:
 
 ---
 
-## 📦 Installation
+## 📦 Instalasi
 
 ```bash
 pip install palasik
@@ -99,9 +190,9 @@ demit --config demit.yaml
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Mulai Cepat
 
-### 1️⃣ Initialize Project
+### 1️⃣ Inisialisasi Proyek
 
 ```bash
 palasik init
@@ -112,8 +203,44 @@ Perintah ini akan membuat:
 1. config.yaml
 
 2. struktur dasar runtime PALASIK
----
-### 2️⃣ Run PALASIK Agent
+
+### 1b) Cek Health
+
+```bash
+palasik check
+```
+
+Menguji startup pipeline trust/policy dan plugin.
+
+### 1c) Simulasi event
+
+```bash
+palasik simulate <event.json>
+```
+
+Preview keputusan (ALLOW/DENY + alasan) tanpa menyalakan runtime penuh.
+
+### 1d) Gate deploy (opsional)
+
+```bash
+palasik policy-snapshot --config config.yaml
+palasik policy-deploy-check --config config.yaml --require-allow
+```
+
+Rollback cepat jika perlu:
+
+```bash
+palasik policy-rollback --config config.yaml --snapshot runs/policy_snapshots/<snapshot>
+```
+
+### 1e) Shortcut health operasional
+
+```bash
+make edge-health
+make edge-post-restart-check
+```
+
+### 2️⃣ Jalankan Agent PALASIK
 
 ```bash
 palasik run
@@ -127,7 +254,7 @@ PALASIK akan:
 
 3. menunggu event dari adapter
 ---
-### 3️⃣ Example: MQTT Event
+### 3️⃣ Contoh Event MQTT
 
 ```bash
 mosquitto_pub -t palasik/sensor/temp -m '{"value": 42}'
@@ -181,6 +308,20 @@ Event → Trust Engine → Policy Engine → Enforcement
 ```
 
 PALASIK adalah decision layer, bukan sekadar message router.
+
+## ✅ Jalur Aktif (Migration Note)
+
+Untuk konsistensi implementasi saat ini, gunakan jalur aktif berikut:
+
+- Trust: `palasik.trust` (`SimpleTrustEvaluator` atau custom evaluator)
+- Policy: `palasik.policy` (`AllowDenyPolicy`, `RuleBasedPolicy`, atau custom policy)
+
+Import dari `palasik.core.trust_engine` dan `palasik.core.policy_engine` tetap didukung
+untuk kompatibilitas, dan akan diperlakukan sebagai deprecation path pada fase migrasi
+berikutnya.
+
+Untuk enforce perilaku fase berikutnya secara lokal, bisa diaktifkan lewat:
+`PALASIK_STRICT_DEPRECATION=1`.
 ---
 ## 🗂 Project Structure
 ```plaintext
@@ -235,7 +376,9 @@ Detail lengkap:
 ## 🧪 Testing
 
 ```bash
-pytest
+python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
+python -m pytest -q
 ```
 
 Semua komponen inti memiliki unit test.
@@ -280,8 +423,21 @@ benchmark & dataset
 
 dokumentasi & studi kasus
 
+Mulai cepat:
+- Buat PR pertama dengan scope kecil (dokumen, contoh, atau test).
+- Ikuti alur di 👉 CONTRIBUTING.md
+- Lihat label `good first issue` untuk kontribusi paling ramah pemula.
+
 Panduan:
 👉 CONTRIBUTING.md
+
+🧩 Untuk strategi pertumbuhan komunitas:
+👉 docs/GROWTH.md
+
+🚀 Mulai hari ini:
+- Star repo
+- Buka 1 issue kecil yang jelas
+- Kirim 1 PR percobaan (dokumen atau test)
 
 ---
 
@@ -308,7 +464,7 @@ David Rinaldi
 
 ## 🚦 Project Status
 
-✅ Core stable (v0.1.0)
+✅ Core stable (v0.2.0)
 
 📦 Published on PyPI
 

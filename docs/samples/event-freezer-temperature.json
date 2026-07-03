@@ -1,0 +1,22 @@
+{
+  "version": "1.1",
+  "event_id": "evt-freezer-007",
+  "timestamp": "2026-07-03T03:20:00Z",
+  "type": "environment.freezer_temp",
+  "topic": "iot/hospital/freezer/fr01",
+  "value": 12,
+  "location": "hospital/pharmacy/freezer-1",
+  "source": {
+    "device_id": "freezer-sensor-1",
+    "ip": "192.168.20.22",
+    "protocol": "mqtt"
+  },
+  "metadata": {
+    "tenant": "hospital-a",
+    "asset_class": "vaccine_cold_chain"
+  },
+  "trust_ctx": {
+    "authenticated": true,
+    "token_ttl_ok": true
+  }
+}

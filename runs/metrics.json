@@ -1,0 +1,14 @@
+{
+  "avg_latency_ms": 0.003,
+  "events_allowed": 1,
+  "events_denied": 0,
+  "events_total": 1,
+  "latency_samples": 1,
+  "reason_code_breakdown": {
+    "TRUST_OK": 1
+  },
+  "total_latency_ms": 0.0032919924706220627,
+  "trust_scores": [
+    0.9
+  ]
+}

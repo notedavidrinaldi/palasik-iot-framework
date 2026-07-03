@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://notedavidrinaldi.github.io/palasik/schemas/event-v1.1.schema.json",
+  "title": "PALASIK Event Schema v1.1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["version", "event_id", "timestamp", "type", "source"],
+  "properties": {
+    "version": { "const": "1.1" },
+    "event_id": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "type": { "type": "string", "minLength": 1 },
+    "topic": { "type": ["string", "null"] },
+    "value": { "type": ["number", "string", "boolean", "null", "object", "array"] },
+    "location": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "source": {
+      "type": "object",
+      "required": ["device_id", "ip"],
+      "properties": {
+        "device_id": { "type": "string", "minLength": 1 },
+        "ip": { "type": "string", "minLength": 1 },
+        "protocol": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "trust_ctx": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "signature": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "raw": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

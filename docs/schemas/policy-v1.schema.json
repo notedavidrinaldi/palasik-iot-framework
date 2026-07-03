@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://notedavidrinaldi.github.io/palasik/schemas/policy-v1.schema.json",
+  "title": "PALASIK Policy v1 Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "default_deny", "default_action", "rules"],
+  "properties": {
+    "version": {
+      "type": ["integer", "string"],
+      "anyOf": [
+        {"const": 1},
+        {"const": "1"}
+      ]
+    },
+    "policy_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "default_deny": {
+      "type": "boolean",
+      "const": true
+    },
+    "default_action": {
+      "type": "string",
+      "enum": ["ALLOW", "MONITOR", "RESTRICT", "CHALLENGE", "QUARANTINE", "DENY"]
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["ALLOW", "MONITOR", "RESTRICT", "CHALLENGE", "QUARANTINE", "DENY"]
+      }
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "action", "condition", "reason_code"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": ["ALLOW", "MONITOR", "RESTRICT", "CHALLENGE", "QUARANTINE", "DENY"]
+          },
+          "reason_code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "condition": {
+            "type": "object",
+            "required": ["op", "key", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": ["eq", "ne", "gt", "gte", "lt", "lte", "in", "nin", "contains", "exists"]
+              },
+              "key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "value": {
+                "type": ["string", "number", "boolean", "array", "object", "null"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
