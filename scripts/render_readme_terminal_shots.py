@@ -64,6 +64,19 @@ PANELS = {
         '  "storage": {"audit_log": {"exists": true}, "metrics_file": {"exists": true}}',
         "}",
     ],
+    "readme-policy-ops.png": [
+        "$ palasik policy-snapshot --config config.yaml",
+        "[PALASIK] policy snapshot: PASS",
+        "path=runs/policy_snapshots/palasik-baseline-20260703T091720Z.snapshot.yaml",
+        "",
+        "$ palasik policy-deploy-check --config config.yaml --smoke-events docs/samples/policy-smoke-events.json --require-allow",
+        "[PALASIK] policy deploy-check: PASS",
+        "events=3 allow_count=2 deny_count=1 deny_ratio=0.333",
+        "",
+        "$ palasik policy-rollback --config config.yaml --snapshot runs/policy_snapshots/<snapshot>",
+        "[PALASIK] policy rollback: PASS",
+        "backup=runs/policy_backups/config.yaml.rollback-backup-20260703T091733Z",
+    ],
 }
 
 
